@@ -15,14 +15,16 @@
   
     <meta name="keywords" content="" />
   
-  <meta property="og:type" content="article">
+  <meta name="description" content="1 ChallengeIn dme-servering-atome-id, subscribe service will send lots of messages to the RabbitMQ every time it is called. This service will be unaccessible until all messages have been sent. The cha">
+<meta property="og:type" content="article">
 <meta property="og:title" content="Spring Boot Async Methods">
 <meta property="og:url" content="http://example.com/2021/02/18/Spring-Boot-Async-Methods/index.html">
 <meta property="og:site_name" content="采石矶">
+<meta property="og:description" content="1 ChallengeIn dme-servering-atome-id, subscribe service will send lots of messages to the RabbitMQ every time it is called. This service will be unaccessible until all messages have been sent. The cha">
 <meta property="og:locale">
 <meta property="og:image" content="http://example.com/null">
 <meta property="article:published_time" content="2021-02-18T03:49:42.000Z">
-<meta property="article:modified_time" content="2021-02-28T06:16:58.801Z">
+<meta property="article:modified_time" content="2021-02-28T06:26:42.559Z">
 <meta property="article:author" content="Wang Renhang">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/null">
@@ -138,7 +140,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            13
+                            ~10.99K
                         
                         字
                         
@@ -148,13 +150,115 @@
             <div class="kratos-post-content">
                 
                 <hr />
-                
+                <h2 id="1-Challenge"><a href="#1-Challenge" class="headerlink" title="1 Challenge"></a>1 Challenge</h2><p>In dme-servering-atome-id, subscribe service will send lots of messages to the RabbitMQ every time it is called. This service will be unaccessible until all messages have been sent. The challenge here is how to return “ok” in the first hand, and do message processing, transmitting and exception handling in the background asynchronously. In this case, we choose to investigate asynchronous programming in Spring Boot.</p>
+<h2 id="2-Asynchronous-programming-in-Spring-Boot"><a href="#2-Asynchronous-programming-in-Spring-Boot" class="headerlink" title="2 Asynchronous programming in Spring Boot"></a>2 Asynchronous programming in Spring Boot</h2><p>There are 4 steps to do async programming in Spring Boot: 1) enable the asynchronous functionality; 2) create async methods; 3) configure the async executor; 4) handle exceptions.</p>
+<h3 id="2-1-Enable-the-asynchronous-functionality"><a href="#2-1-Enable-the-asynchronous-functionality" class="headerlink" title="2.1 Enable the asynchronous functionality"></a>2.1 Enable the asynchronous functionality</h3><p>@EnableAsync annotation helps to enable the asynchronous functionality. It switches on Spring’s ability to run asynchronous methods in a background thread pool.</p>
+<p>You may use @EnableAsync annotation over any of Spring Boot configuration class:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">@EnableAsync</span><br><span class="line">public class AnyConfigClass &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>or main class:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@SpringBootApplication</span><br><span class="line">@EnableAsync</span><br><span class="line">public class Application &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		SpringApplication.run(Application.class, args);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>One @EnableAsync is enough and both ways will work.</p>
+<h3 id="2-2-Create-async-methods"><a href="#2-2-Create-async-methods" class="headerlink" title="2.2 Create async methods"></a>2.2 Create async methods</h3><p>Use @Async annotation over a method to make it run on a separate thread. All internal methods will become async methods if @Async is used over a class. Note, however, that @Async is not supported on methods declared within a @Configuration class.</p>
+<p>The return type of an async method is constrained to either void or Future. With void return type, caller will get response immediately. Processing within the async method will then run in the background, and exceptions will be handled by getAsyncUncaughtExceptionHandler (refer to 2.3 and 2.4).</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@Async</span><br><span class="line">public void yourAsyncMethod(...) &#123;</span><br><span class="line">  ...</span><br><span class="line">  doSomething();</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>If the return type is Future, you may declare the more specific CompletableFuture type:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@Async</span><br><span class="line">public CompletableFuture&lt;YourResultClass&gt; yourAsyncMethod(...) &#123;</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">  YourResultClass yourResult &#x3D; ...</span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  return CompletableFuture.completedFuture(yourResult);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>or ListenableFuture type:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Async</span><br><span class="line">public ListenableFuture&lt;YourResultClass&gt; yourAsyncMethod(...) &#123;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">    YourResultClass yourResult &#x3D; ...</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    return new AsyncResult(yourResult);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>These two types allow for richer interaction with the asynchronous task and for immediate composition with further processing steps. Using Future or other return types will not be able to track the result of the asynchronous method execution.</p>
+<p>Java’s CompletableFuture is an evolution from the regular Future. It makes it easy to pipeline multiple asynchronous operations and merge them into a single asynchronous computation. Spring’s ListenableFuture extends Future with the capability to accept completion callbacks, but sometimes it will lead to the callback hell. Generally, CompletableFuture is recommended.</p>
+<h3 id="2-3-Configure-the-async-executor"><a href="#2-3-Configure-the-async-executor" class="headerlink" title="2.3 Configure the async executor"></a>2.3 Configure the async executor</h3><h4 id="2-3-1-Define-executors"><a href="#2-3-1-Define-executors" class="headerlink" title="2.3.1 Define executors"></a>2.3.1 Define executors</h4><p>After enabling the async functionality, we need to define an executor to pool threads. There are 3 ways:</p>
+<ol>
+<li><p>Implement the AsyncConfigurer with @Configuration</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">@EnableAsync &#x2F;&#x2F;This annotation here is optional if you have used it elsewhere</span><br><span class="line">public class AppConfig implements AsyncConfigurer &#123;</span><br><span class="line"></span><br><span class="line">  @Override</span><br><span class="line">  public Executor getAsyncExecutor() &#123;</span><br><span class="line">    ThreadPoolTaskExecutor executor &#x3D; new ThreadPoolTaskExecutor();</span><br><span class="line">    executor.setCorePoolSize(7);</span><br><span class="line">    executor.setMaxPoolSize(42);</span><br><span class="line">    executor.setQueueCapacity(11);</span><br><span class="line">    executor.setThreadNamePrefix(&quot;MyExecutor::&quot;);</span><br><span class="line">    executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());</span><br><span class="line">    executor.initialize();</span><br><span class="line">    return executor;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  @Override</span><br><span class="line">  public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() &#123;</span><br><span class="line">    return new MyAsyncUncaughtExceptionHandler();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>By implementing AsyncConfigurer, you can customize properties of the executor, the uncaught exception handler or both of them. If you have async method with void return type, and you’d like to handle exceptions in your method, then it is necessary to adopt this way and override the getAsyncUncaughtExceptionHandler().</p>
+</li>
+<li><p>Define an executor with the @Bean  annotation</p>
+</li>
+</ol>
+<p>2.1) Define an executor bean named “taskExecutor”</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">public Executor taskExecutor()&#123;</span><br><span class="line">   ThreadPoolTaskExecutor executor &#x3D; new ThreadPoolTaskExecutor();</span><br><span class="line">   executor.setCorePoolSize(2);</span><br><span class="line">   executor.setMaxPoolSize(4);</span><br><span class="line">   executor.setQueueCapacity(20);</span><br><span class="line">   executor.setThreadNamePrefix(&quot;TaskExecutor::&quot;);</span><br><span class="line">   executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());</span><br><span class="line">   return executor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>This executor can be defined anywhere you like, and Spring will use this executor by default, even if there are other executer beans in the application. However, this bean won’t work if AsyncConfigurer has been implemented. Note, having multiple beans named “taskExecutor” is illegal.</p>
+<p>2.2) Define an executor bean with arbitrary name</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">public Executor yourUniqueExecutor()&#123;</span><br><span class="line">   ThreadPoolTaskExecutor executor &#x3D; new ThreadPoolTaskExecutor();</span><br><span class="line">   executor.setCorePoolSize(7);</span><br><span class="line">   executor.setMaxPoolSize(42);</span><br><span class="line">   executor.setQueueCapacity(11);</span><br><span class="line">   executor.setThreadNamePrefix(&quot;YourUniqueExecutor::&quot;);</span><br><span class="line">   executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());</span><br><span class="line">   return executor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>This executor can also be defined anywhere you like. If you only have one unique executor bean in the context, and AsyncConfigurer hasn’t been implemented, this executor will always be used by async methods even if it is not named “taskExecutor”. Spring will find this executor bean and use it automatically.</p>
+<p>If you’d like to use a specific executor for your async method, you can name a bean like:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@Bean(name &#x3D; &quot;nameOfYourBean&quot;)</span><br></pre></td></tr></table></figure>
+<p>Then use this name in the @Async annotation over your async method:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@Async(&quot;nameOfYourBean&quot;)</span><br></pre></td></tr></table></figure>
+<p>If you use a named bean for your async method with void return type, the method will still  adopt the getAsyncUncaughtExceptionHandler() you define in the configuration.</p>
+<ol start="3">
+<li>Use the default executor</li>
+</ol>
+<p>If none of the above is resolvable, a SimpleAsyncTaskExecutor will be automatically used by Spring (if @EnableAsync is properly used) to process async method invocations.</p>
+<p>There can be multiple beans in the application, and Spring will follow the following sequence to find which executor to use for an async method: 1) If you have designate a named executor bean in @Async; 2) getAsyncExecutor() has been overridden in the AsyncConfigurer; 3) If taskExecutor exists; 4) If any other executor exist; 5) Use the SimpleAsyncTaskExecutor by default.</p>
+<h4 id="2-3-2-Executor-Configuration"><a href="#2-3-2-Executor-Configuration" class="headerlink" title="2.3.2 Executor Configuration"></a>2.3.2 Executor Configuration</h4><ol>
+<li>Common async TaskExecutor types</li>
+</ol>
+<ul>
+<li>SimpleAsyncTaskExecutor: This implementation does not reuse any threads. Rather, it starts up a new thread for each invocation.</li>
+<li>(Recommended) ThreadPoolTaskExecutor: It is a JavaBean that allows for configuring a ThreadPoolExecutor in bean style (through its “corePoolSize”, “maxPoolSize”, “keepAliveSeconds”, “queueCapacity” properties) and exposing it as a Spring TaskExecutor. This class is also well suited for management and monitoring (e.g. through JMX).</li>
+<li>ConcurrentTaskExecutor: There is rarely a need to use ConcurrentTaskExecutor directly. However, if the ThreadPoolTaskExecutor is not flexible enough for your needs, ConcurrentTaskExecutor is an alternative.</li>
+</ul>
+<ol start="2">
+<li>ThreadPoolTaskExecutor settings</li>
+</ol>
+<ul>
+<li>CorePoolSize defines minimum parallel threads that can run at the same time.</li>
+<li>MaxPoolSize defines maximum parallel threads that can run at the same time when the queue is full.</li>
+<li>QueueCapacity defines the capacity of the queue. New tasks will be stored in the queue when core pool is filled.</li>
+<li>In Spring applications, when maximum pool and queue are full, threads will be rejected with ThreadPoolExecutor.AbortPolicy() by default, and you will lose new threads. For different purposes, the <strong>RejectedExecutionHandler</strong> can be customized with the following policies:</li>
+<li><ul>
+<li>(Recommended) ThreadPoolExecutor.AboutPolicy(): Rejecting the thread with throwing RejectedExecutionException. You will lose the thread.</li>
+</ul>
+</li>
+<li><ul>
+<li>ThreadPoolExecutor.CallerRunsPolicy(): The thread won’t be discard. This policy runs the rejected task in the calling thread of the execute method, unless the executor has been shut down, in which case the task is discarded.</li>
+</ul>
+</li>
+<li><ul>
+<li>ThreadPoolExecutor.DiscardPolicy(): The thread will be discard. You will lose the thread.</li>
+</ul>
+</li>
+<li><ul>
+<li>ThreadPoolExecutor.DiscardOldestPolicy(): This policy discards the oldest unhandled request. You will lose some threads inside the queue.</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-4-Handle-exceptions"><a href="#2-4-Handle-exceptions" class="headerlink" title="2.4 Handle exceptions"></a>2.4 Handle exceptions</h3><p>There are 4 kinds of common exceptions:</p>
+<ol>
+<li>Uncaught exceptions of async methods with void return type</li>
+</ol>
+<p>Async methods having a void return type cannot transmit any exception back to the caller. By default, such uncaught exceptions are only logged unless AsyncConfigurer is implemented and getAsyncUncaughtExceptionHandler() is overridden (refer to 2.3).</p>
+<ol start="2">
+<li>Runtime exceptions of async methods with return values</li>
+</ol>
+<p>Just implement try{…}catch(…){…} in the async method will work.</p>
+<ol start="3">
+<li>RejectedExecutionException caused by the AbortPolicy</li>
+</ol>
+<p>If AbortPolicy is set within the RejectedExecutionHandler like:</p>
+<p>executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());<br>At the same time if the queue and pool are all filled, new threads will be rejected, and RejectedExecutionException will be raised. This exception will be raised regardless of the return type of async methods.</p>
+<p>This exception can be caught by:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;Async method with void return</span><br><span class="line">try &#123;</span><br><span class="line">  yourAsyncMethod(...);</span><br><span class="line">  return &quot;ok&quot;;</span><br><span class="line">&#125; catch (RejectedExecutionException e) &#123;</span><br><span class="line">  return &quot;Thread rejected, please try later.&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;Async method with return type</span><br><span class="line">try &#123;</span><br><span class="line">  return yourAsyncMethod(...);</span><br><span class="line">&#125; catch (RejectedExecutionException e) &#123;</span><br><span class="line">  log.warn(&quot;Thread rejected, please try later.&quot;);</span><br><span class="line">  return CompletableFuture.completedFuture(new YourResultClass());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-	<div class="row">
-    <embed src="./pdf/Spring-Boot-Async.pdf" width="100%" height="550" type="application/pdf">
-	</div>
+<ol start="4">
+<li>AsyncRequestTimeoutException</li>
+</ol>
+<p>This exception only happens to async method with return values. It indicates the longest time a calling thread can survive. When this exception happens, the calling thread will be shutdown, while the processing of the async method will still proceed. Finally, the async method will get the result but won’t be able to return it to the client.</p>
+<p>We can try to improve this situation by setting a proper async request-timeout (the unit is millisecond) in the xxx.yml file, define -1 if you need unlimited waiting time.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  mvc:</span><br><span class="line">    async:</span><br><span class="line">      request-timeout: 15000</span><br></pre></td></tr></table></figure>
 
-
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://spring.io/guides/gs/async-method/">Spring Boot example: Creating Asynchronous Methods</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/EnableAsync.html">Spring doc: @EnableAsync</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Async.html">Spring doc: @Async</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/AsyncConfigurer.html">Spring doc: AsyncConfigurer</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.spring.io/spring-framework/docs/current/reference/html/integration.html#scheduling-task-executor">Spring doc: TaskExecutor Types</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903959996416008">新手也能看懂的 SpringBoot 异步编程指南</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.baeldung.com/spring-async">How to do @Async in Spring</a></li>
+</ol>
+<p> </p>
 
             </div>
             
@@ -222,14 +326,7 @@
             const twitterBase   = "https://twitter.com/intent/tweet?";
             const hostUrl       = "http://example.com/2021/02/18/Spring-Boot-Async-Methods/";
             const title         = "「Spring Boot Async Methods」";
-            const excerpt       = `
-
-	
-    
-	
-
-
-`;
+            const excerpt       = `1 ChallengeIn dme-servering-atome-id, subscribe service will send lots of messages to the RabbitMQ every time it is c...`;
             let _URL;
             switch (dest) {
                 case "qq"       : _URL = qqBase+"url="+hostUrl+"&title="+title+"&desc=&summary="+excerpt+"&site=cxpy";     break;
