@@ -24,7 +24,7 @@
 <meta property="og:locale">
 <meta property="og:image" content="http://example.com/null">
 <meta property="article:published_time" content="2020-12-15T07:04:13.000Z">
-<meta property="article:modified_time" content="2020-12-26T08:39:50.320Z">
+<meta property="article:modified_time" content="2021-02-27T11:28:23.781Z">
 <meta property="article:author" content="Wang Renhang">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/null">
@@ -140,7 +140,7 @@
                         <i class="fa fa-edit"></i> 
                         
                         
-                            719
+                            852
                         
                         字
                         
@@ -162,11 +162,14 @@
 </li>
 <li><p><code>docker ps [OPTIONS]</code> 列出容器<br>  OPTIONS说明：<br>  -a :显示所有的容器，包括未运行的。<br>  -l :显示最近创建的容器。<br>  -n :列出最近创建的n个容器。<br>  -q :静默模式，只显示容器编号。<br>  -s :显示总的文件大小。</p>
 </li>
-<li><p><code>docker rm [OPTIONS] CONTAINER [CONTAINER...]</code> 删除容器<br>  OPTIONS说明：<br>  -f :通过 SIGKILL 信号强制删除一个运行中的容器。<br>  -l :移除容器间的网络连接，而非容器本身。<br>  -v :删除与容器关联的卷</p>
+<li><p><code>docker rm [OPTIONS] CONTAINER [CONTAINER...]</code> 删除容器<br>  OPTIONS说明：<br>  -f :通过 SIGKILL 信号强制删除一个运行中的容器。<br>  -l :移除容器间的网络连接，而非容器本身。<br>  -v :删除与容器关联的卷<br>  remove all stopped containers: docker rm $(docker ps -a -q)</p>
 </li>
-<li><p><code>docker exec [OPTIONS] CONTAINER COMMAND [ARG...]</code> 在活动或正在运行的容器中运行命令；<br>  OPTIONS说明：<br>  -d :分离模式: 在后台运行<br>  -i :即使没有附加也保持STDIN 打开<br>  -t :分配一个伪终端</p>
+<li><p><code>docker exec [OPTIONS] CONTAINER COMMAND [ARG...]</code> 在活动或正在运行的容器中运行命令；<br>  OPTIONS说明：<br>  -d :分离模式: 在后台运行<br>  -i :即使没有附加也保持STDIN 打开<br>  -t :分配一个伪终端<br>应用：</p>
 </li>
 </ul>
+<ol>
+<li>访问container的文件系统<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -t -i mycontainer &#x2F;bin&#x2F;bash</span><br></pre></td></tr></table></figure></li>
+</ol>
 
             </div>
             
@@ -260,7 +263,7 @@ docker images [OPTIONS] [REPOSITORY[:TAG]] 列出本地镜像  OPTIONS说明： 
                         
                     </div>
                     <div class="pull-date">
-                    <span>最后编辑：2020-12-26</span>
+                    <span>最后编辑：2021-02-27</span>
                     </div>
                 </div>
             </footer>
@@ -317,34 +320,42 @@ docker images [OPTIONS] [REPOSITORY[:TAG]] 列出本地镜像  OPTIONS说明： 
         
           
           
+            <a class="list-group-item" href="/2021/02/24/Scala/"><i class="fa  fa-book"></i> Scala</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2021/02/24/Airflow/"><i class="fa  fa-book"></i> Airflow</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2021/02/18/Spring-Boot-Async-Methods/"><i class="fa  fa-book"></i> Spring Boot Async Methods</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/2021/01/30/MongoDB/"><i class="fa  fa-book"></i> Import data into MongoDB</a>
+            
+          
+        
+          
+          
             <a class="list-group-item" href="/2020/12/17/RabbitMQ/"><i class="fa  fa-book"></i> RabbitMQ</a>
             
           
         
           
-          
-            <a class="list-group-item" href="/2020/12/15/Docker/"><i class="fa  fa-book"></i> Docker</a>
             
           
-        
-          
-          
-            <a class="list-group-item" href="/2020/12/14/Markdown/"><i class="fa  fa-book"></i> Markdown</a>
             
           
-        
-          
-          
-            <a class="list-group-item" href="/2020/12/14/Git/"><i class="fa  fa-book"></i> Git</a>
             
           
-        
-          
-          
-            <a class="list-group-item" href="/2020/12/12/Spring-boot/"><i class="fa  fa-book"></i> Spring-boot</a>
             
-          
-        
           
             
       </ul>
@@ -395,7 +406,7 @@ docker images [OPTIONS] [REPOSITORY[:TAG]] 列出本地镜像  OPTIONS说明： 
                     </ul>
                     <ul class="kratos-copyright">
                         <div>
-                            <li>&copy; 2020 Wang Renhang 版权所有.</li>
+                            <li>&copy; 2021 Wang Renhang 版权所有.</li>
                             <li>本站已运行<span id="span_dt">Loading...</span></li>
                         </div>
                         <div>
