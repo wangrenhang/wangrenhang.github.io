@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+
+
+<html lang="cn">
+  
+
+    <head>
+      <meta charset="utf-8" />
+        
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1"
+      />
+      <title>搭建树莓派集群 |  采石矶</title>
+  <meta name="generator" content="hexo-theme-ayer">
+      
+      <link rel="shortcut icon" href="/favicon.ico" />
+       
+<link rel="stylesheet" href="/dist/main.css">
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/Shen-Yu/cdn/css/remixicon.min.css"
+      />
+      
+<link rel="stylesheet" href="/css/custom.css">
+ 
+      <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+       
+ 
+
+      <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bulma@5.0.1/bulma.min.css"
+      />
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.min.js"></script>
+
+      <!-- mermaid -->
+      
+      <style>
+        .swal2-styled.swal2-confirm {
+          font-size: 1.6rem;
+        }
+      </style>
+    <link rel="alternate" href="/atom.xml" title="采石矶" type="application/atom+xml">
+</head>
+  </html>
+</html>
+
+
+<body>
+  <div id="app">
+    
+      
+    <main class="content on">
+      <section class="outer">
+  <article
+  id="post-搭建树莓派集群"
+  class="article article-type-post"
+  itemscope
+  itemprop="blogPost"
+  data-scroll-reveal
+>
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  搭建树莓派集群
+</h1>
+ 
+
+      
+    </header>
+     
+    <div class="article-meta">
+      <a href="/%E6%8A%80%E6%9C%AF/%E6%90%AD%E5%BB%BA%E6%A0%91%E8%8E%93%E6%B4%BE%E9%9B%86%E7%BE%A4/" class="article-date">
+  <time datetime="2022-01-01T10:50:12.000Z" itemprop="datePublished">2022-01-01</time>
+</a> 
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+  
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> Word count:</span>
+            <span class="post-count">2k</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> Reading time≈</span>
+            <span class="post-count">10 min</span>
+        </span>
+    </span>
+</div>
+ 
+    </div>
+      
+    <div class="tocbot"></div>
+
+
+
+
+  
+    <div class="article-entry" itemprop="articleBody">
+       
+  <h2 id="跑起来"><a href="#跑起来" class="headerlink" title="跑起来"></a>跑起来</h2><h3 id="硬件准备"><a href="#硬件准备" class="headerlink" title="硬件准备"></a>硬件准备</h3><p>架子</p>
+<p>风扇</p>
+<p>散热片</p>
+<p>usb插排（瓦数）</p>
+<p>32GB micro sd卡</p>
+<p>读卡器</p>
+<p>树莓派4B 4G内存版</p>
+<h3 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h3><p>下载ubuntu</p>
+<p><a target="_blank" rel="noopener" href="https://ubuntu.com/download/raspberry-pi">https://ubuntu.com/download/raspberry-pi</a></p>
+<p>如果你尝试在装过系统的 SD 卡上安装系统，sd卡格式化：SD Formatter。</p>
+<p>镜像安装：win32diskimager</p>
+<p>.解压下载的操作系统镜像压缩文件，得到 img 镜像文件（文件名后缀就是 img）。<br>2.将SD使用卡托或者读卡器后，连上电脑。<br>3.解压并运行 win32diskimager 工具。<br>4.在 win32diskimager 软件中选择系统镜像（img文件），“Device”下选择SD的盘符，然后选择“Write”，期间出现对话框选择是。</p>
+<p>如果 Windows 提示你是否要格式化 SD 卡，<strong>请不要格式化</strong>，否则可能导致安装在隐藏分区中的系统被擦除而无法进入系统。</p>
+<p>安装完成之后，你会发现 SD 卡所显示的容量低于预期。这是因为在 Windows 系统中只能显示出 FAT 格式的 boot 分区，只有几十个 MB，更大的分区是 Linux 分区，Windows 系统是无法看到的，这并不影响树莓派系统的工作。</p>
+<h4 id="Setup-Wi-Fi-directly-from-your-SD-card"><a href="#Setup-Wi-Fi-directly-from-your-SD-card" class="headerlink" title="Setup Wi-Fi directly from your SD card"></a>Setup Wi-Fi directly from your SD card</h4><p>Navigate inside the root folder of the card. The name should be something like “system-boot”.</p>
+<p>Find the file named “network-config” and open it in a text editor. On Windows, you can right-click -&gt; “open with” and select any text editor you want.</p>
+<p>The file should contains this:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"># This file contains a netplan-compatible configuration which cloud-init</span><br><span class="line"># will apply on first-boot. Please refer to the cloud-init documentation and</span><br><span class="line"># the netplan reference for full details:</span><br><span class="line">#</span><br><span class="line"># https:&#x2F;&#x2F;cloudinit.readthedocs.io&#x2F;</span><br><span class="line"># https:&#x2F;&#x2F;netplan.io&#x2F;reference</span><br><span class="line">#</span><br><span class="line"># Some additional examples are commented out below</span><br><span class="line"></span><br><span class="line">version: 2</span><br><span class="line">ethernets:</span><br><span class="line">  eth0:</span><br><span class="line">    dhcp4: true</span><br><span class="line">    optional: true</span><br><span class="line">#wifis:</span><br><span class="line">#  wlan0:</span><br><span class="line">#    dhcp4: true</span><br><span class="line">#    optional: true</span><br><span class="line">#    access-points:</span><br><span class="line">#      myhomewifi:</span><br><span class="line">#        password: &quot;S3kr1t&quot;</span><br><span class="line">#      myworkwifi:</span><br><span class="line">#        password: &quot;correct battery horse staple&quot;</span><br><span class="line">#      workssid:</span><br><span class="line">#        auth:</span><br><span class="line">#          key-management: eap</span><br><span class="line">#          method: peap</span><br><span class="line">#          identity: &quot;me@example.com&quot;</span><br><span class="line">#          password: &quot;passw0rd&quot;</span><br><span class="line">#          ca-certificate: &#x2F;etc&#x2F;my_ca.pem</span><br></pre></td></tr></table></figure>
+
+<p>改成这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">version: 2</span><br><span class="line">ethernets:</span><br><span class="line">  eth0:</span><br><span class="line">    dhcp4: true</span><br><span class="line">    optional: true</span><br><span class="line">wifis:</span><br><span class="line">  wlan0:</span><br><span class="line">    dhcp4: true</span><br><span class="line">    optional: true</span><br><span class="line">    access-points:</span><br><span class="line">      &quot;YOUR_WIFI_NAME&quot;:</span><br><span class="line">        password: &quot;YOUR_WIFI_PASSWORD&quot;</span><br></pre></td></tr></table></figure>
+
+<p>A few things to pay attention to:</p>
+<ul>
+<li>Make sure the <strong>indentation is exactly 2 spaces</strong>. No tab, no 4 spaces.</li>
+<li>Replace YOUR_WIFI_NAME with your actual Wi-Fi name. <strong>Keep the quotes “”</strong>.</li>
+<li>Replace YOUR_WIFI_PASSWORD with the password for the Wi-Fi. <strong>Keep the quotes “”</strong>.</li>
+<li>Of course, this Wi-Fi network should be the same as the one your computer is currently connected to, otherwise the rest of this tutorial won’t work.</li>
+</ul>
+<p>ssh默认是直接起的，不用自己设置</p>
+<h3 id="软件设置"><a href="#软件设置" class="headerlink" title="软件设置"></a>软件设置</h3><p>1）找ip</p>
+<p>2）ssh，改密码<br>在/etc/hosts增加映射对</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">192.168.1.11 node1</span><br><span class="line">192.168.1.12 node2</span><br></pre></td></tr></table></figure>
+<p>生成公私钥对<code>ssh-keygen -t rsa</code><br>发送公钥到相应机器<code>ssh-copy-id node2</code></p>
+<p>3）Run </p>
+<p><code>timedatectl</code>：显示当前时间时区等信息</p>
+<p><code>timedatectl list-timezones</code>：列出所有可用的时区</p>
+<p><code>timedatectl set-timezone your_time_zone</code>：设置时区</p>
+<p>例如：<code>timedatectl set-timezone Europe/Paris</code></p>
+<p>4）apt源</p>
+<p>是arm版，源是以ubuntu-ports结尾</p>
+<p>lsb_release -a 看系统版本</p>
+<p><code>sudo vim /etc/apt/sources.list</code></p>
+<p>修改为以下源：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic main multiverse restricted universe</span><br><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-security main multiverse restricted universe</span><br><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-updates main multiverse restricted universe</span><br><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-backports main multiverse restricted universe</span><br></pre></td></tr></table></figure>
+
+<p>更新</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt upgrade</span><br><span class="line">sudo apt autoremove</span><br></pre></td></tr></table></figure>
+
+
+
+<p>5）pip</p>
+<p>安装pip3</p>
+<p><code>sudo apt-get install python3-pip</code></p>
+<p>修改pip源</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir ~/.pip </span><br><span class="line">sudo nano ~/.pip/pip.conf</span><br></pre></td></tr></table></figure>
+
+<p>将以下内容写入配置文件：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[global]</span><br><span class="line">index-url=https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line">[install]</span><br><span class="line">trusted-host=pypi.tuna.tsinghua.edu.cn</span><br></pre></td></tr></table></figure>
+
+<p>6）设置静态ip</p>
+<p><code>sudo apt install net-tools</code></p>
+<p>sudo nano /etc/netplan/50-cloud-init.yaml</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">wifis:</span><br><span class="line">    wlan0:</span><br><span class="line">    	access-points:</span><br><span class="line">    		<span class="string">&quot;无线的SSID名&quot;</span>:</span><br><span class="line">    			password:无线密码</span><br><span class="line">    	addresses: [<span class="string">&quot;静态ip&quot;</span>/24]</span><br><span class="line">    	gateway4: <span class="string">&quot;网关&quot;</span></span><br><span class="line">    	</span><br><span class="line">network:</span><br><span class="line">    ethernets:</span><br><span class="line">        eth0:</span><br><span class="line">            dhcp4: <span class="literal">true</span></span><br><span class="line">            optional: <span class="literal">true</span></span><br><span class="line">    version: 2</span><br><span class="line">    wifis:</span><br><span class="line">        wlan0:</span><br><span class="line">            access-points:</span><br><span class="line">                HUAWEI_Wang:</span><br><span class="line">                    password: 3wm2359475</span><br><span class="line">            addresses: [192.168.3.100/24]</span><br><span class="line">            gateway4: 192.168.3.1</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>使配置生效</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo netplan apply</span><br></pre></td></tr></table></figure>
+
+<p>查看ip地址</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ifconfig</span><br></pre></td></tr></table></figure>
+
+<h3 id="风扇"><a href="#风扇" class="headerlink" title="风扇"></a>风扇</h3><h4 id="实现温控风扇"><a href="#实现温控风扇" class="headerlink" title="实现温控风扇"></a>实现温控风扇</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget https://github.com/joan2937/pigpio/archive/master.zip</span><br><span class="line">unzip master.zip</span><br><span class="line"><span class="built_in">cd</span> pigpio-master</span><br><span class="line">make</span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> pigpio</span><br><span class="line"></span><br><span class="line">pi = pigpio.pi()</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">  status, sysinfo = subprocess.getstatusoutput(<span class="string">&quot;landscape-sysinfo&quot;</span>)</span><br><span class="line">  info_list = sysinfo.split(<span class="string">&quot;\n&quot;</span>)</span><br><span class="line">  temperature = <span class="number">100</span></span><br><span class="line">  <span class="keyword">for</span> info <span class="keyword">in</span> info_list:</span><br><span class="line">    <span class="keyword">if</span> info.find(<span class="string">&quot;Temperature&quot;</span>) != -<span class="number">1</span>:</span><br><span class="line">      temperature = <span class="built_in">float</span>(info.split()[<span class="number">1</span>])</span><br><span class="line">      <span class="keyword">break</span></span><br><span class="line">  <span class="keyword">if</span> temperature &gt; <span class="number">55.0</span>:</span><br><span class="line">    pi.write(<span class="number">18</span>, <span class="number">1</span>)</span><br><span class="line">    time.sleep(<span class="number">120</span>)</span><br><span class="line">  <span class="keyword">else</span>:</span><br><span class="line">    pi.write(<span class="number">18</span>, <span class="number">0</span>)</span><br><span class="line">    time.sleep(<span class="number">60</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="开机启动脚本"><a href="#开机启动脚本" class="headerlink" title="开机启动脚本"></a>开机启动脚本</h4><p>需要创建一个rc.local的可执行文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo nano /etc/rc.local</span><br></pre></td></tr></table></figure>
+
+<p>内容</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#! /bin/sh -e</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;password&#x27;</span> | sudo -S /home/ubuntu/pigpio-master/pigpiod</span><br><span class="line">nohup python3 /home/ubuntu/argon-fan/start.py &gt; error.log 2&gt;&amp;1 &amp;</span><br><span class="line"><span class="built_in">exit</span> 0</span><br></pre></td></tr></table></figure>
+
+<p>p.s</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">bash的0、1、2分别代表如下含义：</span><br><span class="line"> 0 – stdin (standard input)</span><br><span class="line"> 1 – stdout (standard output)</span><br><span class="line"> 2 – stderr (standard error)</span><br><span class="line">nohup python -u main.py &gt; test.out 2&gt;&amp;1 &amp;</span><br><span class="line">nohup+最后面的&amp; 是让命令在后台执行</span><br><span class="line">&gt;test.out 是将信息输出到该日志中</span><br><span class="line">2&gt;&amp;1 是将标准错误信息转变成标准输出</span><br></pre></td></tr></table></figure>
+
+
+
+<p>给脚本赋权限</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo chmod +x /etc/rc.local</span><br></pre></td></tr></table></figure>
+
+<p>完成脚本编写后需要修改rc-local.service</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /lib/systemd/system/rc-local.service</span><br></pre></td></tr></table></figure>
+
+<p>内容</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[Service]</span><br><span class="line">ExecStart=/etc/rc.local start</span><br><span class="line">[Install]  </span><br><span class="line">WantedBy=multi-user.target  </span><br><span class="line">Alias=rc-local.service</span><br></pre></td></tr></table></figure>
+
+<p>systemd 默认读取 /etc/systemd/system 下的配置文件, 所以还需要在 /etc/systemd/system 目录下创建软链接</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ln -s /lib/systemd/system/rc-local.service /etc/systemd/system/ </span><br></pre></td></tr></table></figure>
+
+<p>最后执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> rc-local</span><br><span class="line">systemctl start rc-local.service  <span class="comment">#启动服务</span></span><br><span class="line">systemctl stop rc-local.service  <span class="comment">#暂停服务</span></span><br><span class="line">systemctl status rc-local.service <span class="comment">#查看状态</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="K8S"><a href="#K8S" class="headerlink" title="K8S"></a>K8S</h3><h4 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h4><ul>
+<li><p>时间同步<br>kubernetes要求集群中的节点时间必须精确一直，这里使用chronyd服务从网络同步时间</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]<span class="comment"># systemctl start chronyd</span></span><br><span class="line">[root@master ~]<span class="comment"># systemctl enable chronyd</span></span><br><span class="line">[root@master ~]<span class="comment"># date</span></span><br></pre></td></tr></table></figure></li>
+<li><p>禁用iptable和firewalld服务<br>kubernetes和docker 在运行的中会产生大量的iptables规则，为了不让系统规则跟它们混淆，直接关闭系统的规则</p>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]<span class="comment"># systemctl stop firewalld</span></span><br><span class="line">[root@master ~]<span class="comment"># systemctl disable firewalld</span></span><br><span class="line">[root@master ~]<span class="comment"># systemctl stop iptables</span></span><br><span class="line">[root@master ~]<span class="comment"># systemctl disable iptables</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>禁用swap分区</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">swapoff -a</span><br></pre></td></tr></table></figure></li>
+<li><p>修改linux的内核参数</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 修改linux的内核采纳数，添加网桥过滤和地址转发功能</span></span><br><span class="line"><span class="comment"># 编辑/etc/sysctl.d/kubernetes.conf文件，添加如下配置：</span></span><br><span class="line">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">net.bridge.bridge-nf-call-iptables = 1</span><br><span class="line">net.ipv4.ip_forward = 1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重新加载配置</span></span><br><span class="line">[root@master ~]<span class="comment"># sysctl -p</span></span><br><span class="line"><span class="comment"># 加载网桥过滤模块</span></span><br><span class="line">[root@master ~]<span class="comment"># modprobe br_netfilter</span></span><br><span class="line"><span class="comment"># 查看网桥过滤模块是否加载成功</span></span><br><span class="line">[root@master ~]<span class="comment"># lsmod | grep br_netfilter</span></span><br></pre></td></tr></table></figure></li>
+<li><p>安装docker</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install -y docker.io</span><br></pre></td></tr></table></figure></li>
+<li><p>设置docker国内镜像源</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 配置</span></span><br><span class="line">tee /etc/docker/daemon.json &lt;&lt;-<span class="string">&#x27;EOF&#x27;</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="string">&quot;exec-opts&quot;</span>: [<span class="string">&quot;native.cgroupdriver=systemd&quot;</span>],</span><br><span class="line">	<span class="string">&quot;registry-mirrors&quot;</span>: [<span class="string">&quot;https://kn0t2bca.mirror.aliyuncs.com&quot;</span>]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br><span class="line"><span class="comment"># 重启</span></span><br><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl restart docker</span><br><span class="line">systemctl <span class="built_in">enable</span> docker</span><br></pre></td></tr></table></figure></li>
+<li><p>配置k8s安装源，然后安装kubelet、kubeadm、kubectl</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">apt-get update &amp;&amp; apt-get install -y apt-transport-https</span><br><span class="line">curl https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | apt-key add - </span><br><span class="line">cat &gt;&gt; /etc/apt/sources.list.d/kubernetes.list &lt;&lt; <span class="string">EOF</span></span><br><span class="line"><span class="string">deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main</span></span><br><span class="line"><span class="string">EOF</span>  </span><br><span class="line">apt-get update</span><br><span class="line">apt-get install -y kubelet=1.23.6-00 kubeadm=1.23.6-00 kubectl=1.23.6-00</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编辑/etc/sysconfig/kubelet, 添加下面的配置</span></span><br><span class="line">KUBELET_CGROUP_ARGS=<span class="string">&quot;--cgroup-driver=systemd&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置kubelet开机自启</span></span><br><span class="line">[root@master ~]<span class="comment"># systemctl enable kubelet</span></span><br></pre></td></tr></table></figure></li>
+<li><p>准备集群镜像</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在安装kubernetes集群之前，必须要提前准备好集群需要的镜像，所需镜像可以通过下面命令查看</span></span><br><span class="line">[root@master ~]<span class="comment"># kubeadm config images list</span></span><br><span class="line"></span><br><span class="line">images=(</span><br><span class="line">	kube-apiserver-amd64:v1.23.6</span><br><span class="line">	kube-controller-manager-amd64:v1.23.6</span><br><span class="line">	kube-scheduler-amd64:v1.23.6</span><br><span class="line">	kube-proxy-amd64:v1.23.6</span><br><span class="line">	pause:3.7</span><br><span class="line">	etcd-amd64:3.5.3-0</span><br><span class="line">	coredns:1.8.6</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> imageName <span class="keyword">in</span> <span class="variable">$&#123;images[@]&#125;</span>;<span class="keyword">do</span></span><br><span class="line">	sudo docker pull registry.cn-hangzhou.aliyuncs.com/google_containers/<span class="variable">$imageName</span></span><br><span class="line">	sudo docker tag registry.cn-hangzhou.aliyuncs.com/google_containers/<span class="variable">$imageName</span> k8s.gcr.io/<span class="variable">$imageName</span></span><br><span class="line">	sudo docker rmi registry.cn-hangzhou.aliyuncs.com/google_containers/<span class="variable">$imageName</span> </span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure></li>
+<li><p> 集群初始化<br>下面的操作只需要在master节点上执行即可</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建集群</span></span><br><span class="line">[root@master ~]<span class="comment"># kubeadm init \</span></span><br><span class="line">	--apiserver-advertise-address=192.168.3.100 \</span><br><span class="line">	--image-repository registry.aliyuncs.com/google_containers \</span><br><span class="line">	--kubernetes-version=v1.23.6 \</span><br><span class="line">	--service-cidr=10.96.0.0/12 \</span><br><span class="line">	--pod-network-cidr=10.244.0.0/16</span><br><span class="line"><span class="comment"># 创建网络</span></span><br><span class="line">kubectl apply -f kube-flannel.yml</span><br><span class="line"><span class="comment"># 按指示创建必要文件，加入worker（在worker上操作）</span></span><br><span class="line">要是没保存token，可重新生成：kubeadm token create --print-join-command</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>kubeadm遇到问题中断，下次运行前<br><code>sudo kubeadm reset</code><br><code>sudo rm -rf $HOME/.kube</code></p>
+<p>遇到dns无法解析：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo rm /etc/resolv.conf</span><br><span class="line">sudo vim /etc/resolv.conf</span><br><span class="line">Add this line to the file: nameserver 223.5.5.5</span><br><span class="line">Restart the service: sudo systemctl restart systemd-resolved.service</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>集群测试<ul>
+<li>创建一个nginx服务<br><code>kubectl create deployment nginx  --image=nginx:1.14-alpine</code></li>
+<li>暴露端口<br><code>kubectl expose deploy nginx  --port=80 --target-port=80  --type=NodePort</code></li>
+<li>查看服务<br><code>kubectl get pod,svc</code></li>
+</ul>
+</li>
+</ul>
+<p>参考：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41985134/article/details/121182623">https://blog.csdn.net/qq_41985134/article/details/121182623</a></p>
+<p>microk8s</p>
+<p>sudo apt-get –purge remove snapd</p>
+<p>sudo apt-get install snapd</p>
+<p><a target="_blank" rel="noopener" href="https://ubuntu.com/tutorials/how-to-kubernetes-cluster-on-raspberry-pi#1-overview">https://ubuntu.com/tutorials/how-to-kubernetes-cluster-on-raspberry-pi#1-overview</a></p>
+<p>解决墙：<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/02fd2540fab2">https://www.jianshu.com/p/02fd2540fab2</a></p>
+ 
+      <!-- reward -->
+      
+      <div id="reword-out">
+        <div id="reward-btn">
+          Donate
+        </div>
+      </div>
+      
+    </div>
+    
+
+    <!-- copyright -->
+    
+    <div class="declare">
+      <ul class="post-copyright">
+        <li>
+          <i class="ri-copyright-line"></i>
+          <strong>Copyright： </strong>
+          
+          Copyright is owned by the author. For commercial reprints, please contact the author for authorization. For non-commercial reprints, please indicate the source.
+          
+        </li>
+      </ul>
+    </div>
+    
+    <footer class="article-footer">
+       
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://example.com/%E6%8A%80%E6%9C%AF/%E6%90%AD%E5%BB%BA%E6%A0%91%E8%8E%93%E6%B4%BE%E9%9B%86%E7%BE%A4/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>  
+    </footer>
+  </div>
+
+   
+  <nav class="article-nav">
+    
+      <a href="/%E6%8A%80%E6%9C%AF/C++/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            C++
+          
+        </div>
+      </a>
+    
+    
+      <a href="/%E7%90%86%E8%B4%A2/%E4%BB%B7%E5%80%BC%E6%8A%95%E8%B5%84/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">价值投资</div>
+      </a>
+    
+  </nav>
+
+   
+<!-- valine评论 -->
+<div id="vcomments-box">
+  <div id="vcomments"></div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js"></script>
+<script>
+  new Valine({
+    el: "#vcomments",
+    app_id: "",
+    app_key: "",
+    path: window.location.pathname,
+    avatar: "monsterid",
+    placeholder: "给我的文章加点评论吧~",
+    recordIP: true,
+  });
+  const infoEle = document.querySelector("#vcomments .info");
+  if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+    infoEle.childNodes.forEach(function (item) {
+      item.parentNode.removeChild(item);
+    });
+  }
+</script>
+<style>
+  #vcomments-box {
+    padding: 5px 30px;
+  }
+
+  @media screen and (max-width: 800px) {
+    #vcomments-box {
+      padding: 5px 0px;
+    }
+  }
+
+  #vcomments-box #vcomments {
+    background-color: #fff;
+  }
+
+  .v .vlist .vcard .vh {
+    padding-right: 20px;
+  }
+
+  .v .vlist .vcard {
+    padding-left: 10px;
+  }
+</style>
+
+ 
+   
+     
+</article>
+
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul>
+      <li>
+        Copyrights &copy;
+        2015-2023
+        <i class="ri-heart-fill heart_icon"></i> Wang Renhang
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+      </li>
+    </ul>
+    <ul>
+      <li>
+        
+        
+        <span>
+  <span><i class="ri-user-3-fill"></i>Visitors:<span id="busuanzi_value_site_uv"></span></span>
+  <span class="division">|</span>
+  <span><i class="ri-eye-fill"></i>Views:<span id="busuanzi_value_page_pv"></span></span>
+</span>
+        
+      </li>
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      
+    </ul>
+    <ul>
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://s9.cnzz.com/z_stat.php?id=1278069914&amp;web_id=1278069914'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>    
+    </main>
+    <div class="float_btns">
+      <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+    </div>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="采石矶"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/friends">友链</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-3.6.0.min.js"></script>
+ 
+<script src="/js/lazyload.min.js"></script>
+
+<!-- Tocbot -->
+ 
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  tocbot.init({
+    tocSelector: ".tocbot",
+    contentSelector: ".article-entry",
+    headingSelector: "h1, h2, h3, h4, h5, h6",
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: "main",
+    positionFixedSelector: ".tocbot",
+    positionFixedClass: "is-position-fixed",
+    fixedSidebarOffset: "auto",
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css"
+/>
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+<!-- ImageViewer -->
+ <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script> 
+<!-- MathJax -->
+
+<!-- Katex -->
+
+<!-- busuanzi  -->
+ 
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+ 
+<!-- ClickLove -->
+
+<!-- ClickBoom1 -->
+
+<!-- ClickBoom2 -->
+
+<!-- CodeCopy -->
+ 
+<link rel="stylesheet" href="/css/clipboard.css">
+ <script src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js"></script>
+<script>
+  function wait(callback, seconds) {
+    var timelag = null;
+    timelag = window.setTimeout(callback, seconds);
+  }
+  !function (e, t, a) {
+    var initCopyCode = function(){
+      var copyHtml = '';
+      copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
+      copyHtml += '<i class="ri-file-copy-2-line"></i><span>COPY</span>';
+      copyHtml += '</button>';
+      $(".highlight .code pre").before(copyHtml);
+      $(".article pre code").before(copyHtml);
+      var clipboard = new ClipboardJS('.btn-copy', {
+        target: function(trigger) {
+          return trigger.nextElementSibling;
+        }
+      });
+      clipboard.on('success', function(e) {
+        let $btn = $(e.trigger);
+        $btn.addClass('copied');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-checkbox-circle-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPIED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-checkbox-circle-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+      clipboard.on('error', function(e) {
+        e.clearSelection();
+        let $btn = $(e.trigger);
+        $btn.addClass('copy-failed');
+        let $icon = $($btn.find('i'));
+        $icon.removeClass('ri-file-copy-2-line');
+        $icon.addClass('ri-time-line');
+        let $span = $($btn.find('span'));
+        $span[0].innerText = 'COPY FAILED';
+        
+        wait(function () { // 等待两秒钟后恢复
+          $icon.removeClass('ri-time-line');
+          $icon.addClass('ri-file-copy-2-line');
+          $span[0].innerText = 'COPY';
+        }, 2000);
+      });
+    }
+    initCopyCode();
+  }(window, document);
+</script>
+ 
+<!-- CanvasBackground -->
+ 
+<script src="/js/dz.js"></script>
+ 
+<script>
+  if (window.mermaid) {
+    mermaid.initialize({ theme: "forest" });
+  }
+</script>
+
+
+    
+    
+
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,1488 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>C++</title>
+    <url>/%E6%8A%80%E6%9C%AF/C++/</url>
+    <content><![CDATA[<h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><h3 id="先举个栗子"><a href="#先举个栗子" class="headerlink" title="先举个栗子"></a>先举个栗子</h3><p>首先来看怎么在c++里实现一个类，需要用到也需要区分清楚.h和.cpp文件。.h里面应该放各种声明（declaration），.cpp里面应该放各种定义（definition）。类/结构体的声明、函数原型和extern修饰的变量都属于声明，变量定义、函数具体实现都属于定义。</p>
+<p>.h文件：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> POINT_H</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> POINT_H</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Point</span> &#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> x;</span><br><span class="line">    <span class="keyword">int</span> y;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Point(<span class="keyword">int</span> x, <span class="keyword">int</span> y); <span class="comment">//构造函数</span></span><br><span class="line">    ~Point(); <span class="comment">//析构函数</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">move</span><span class="params">(<span class="keyword">int</span> dx, <span class="keyword">int</span> dy)</span></span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">// !POINT_H</span></span></span><br></pre></td></tr></table></figure>
+
+<p>.cpp文件：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;point.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="built_in">std</span>;</span><br><span class="line"></span><br><span class="line">Point::Point(<span class="keyword">int</span> x, <span class="keyword">int</span> y)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">this</span>-&gt;x = x; <span class="comment">//this是指向当前对象的指针</span></span><br><span class="line">    <span class="keyword">this</span>-&gt;y = y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Point::~Point()</span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Point::print</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">cout</span> &lt;&lt; x &lt;&lt; <span class="string">&quot; &quot;</span> &lt;&lt; y &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Point::move</span><span class="params">(<span class="keyword">int</span> dx, <span class="keyword">int</span> dy)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    x += dx;</span><br><span class="line">    y += dy;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>main函数：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;point.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function">Point <span class="title">p</span><span class="params">(<span class="number">1</span>, <span class="number">2</span>)</span></span>;</span><br><span class="line">    p.print();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面这些代码有不少细节，需要逐一分析下。</p>
+<h3 id="讲讲include"><a href="#讲讲include" class="headerlink" title="讲讲include"></a>讲讲include</h3><p>在代码某处需要用到定义的类的时候，需要使用#include。include的作用是让编译器在编译预处理的时候把.h文件里面的东西复制进.cpp文件里。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;xx.h&quot;</span> <span class="comment">//会在当前目录下找头文件</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;xx.h&gt; //会在编译器目录下找头文件</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;xx&gt; //同上</span></span></span><br></pre></td></tr></table></figure>
+
+<p>有时候在头文件a里include头文件b会出现问题，比如：b里声明了一个类，c.cpp同时include了a.h和b.h，这样被声明的类会被复制进c两次。为了防止这种情况，需要把头文件用下面的结构包起来：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> A_HEADER_FILE</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> A_HEADER_FILE</span></span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="作用域分解"><a href="#作用域分解" class="headerlink" title="作用域分解"></a>作用域分解</h3><p>:: 就是作用域分解运算符，用法如下：</p>
+<ul>
+<li><code>&lt;Class C&gt;::&lt;function F&gt;</code> 表示函数F是C这个类的成员函数</li>
+<li><code>::&lt;function F&gt;</code> 表示全局函数</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">S::f</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    f(); <span class="comment">//类域的f()，自己调自己，可用于递归</span></span><br><span class="line">    ::f(); <span class="comment">//调用全局的f()</span></span><br><span class="line">    a++; <span class="comment">//类域的a</span></span><br><span class="line">    ::a++; <span class="comment">//全局的a</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="访问限制"><a href="#访问限制" class="headerlink" title="访问限制"></a>访问限制</h3><p>类的成员有三种类型的访问限制：</p>
+<ul>
+<li><p>public：谁都可以访问</p>
+</li>
+<li><p>protected：类和类的子孙可以访问。</p>
+</li>
+<li><p>private：在类的内部才可以访问。同一个类的对象互相之间是可以访问private修饰的成员的。<strong>注意，不加修饰的class成员默认为private</strong>。</p>
+</li>
+</ul>
+<h4 id="友元"><a href="#友元" class="headerlink" title="友元"></a>友元</h4><p>如果想方便地访问对象的私有成员而不想写一堆get和set方法，可以考虑使用友元函数和友元类。</p>
+<ul>
+<li><p>友元函数就是在类中声明全局函数或者别的类的函数前加上friend，这样别的函数就可以访问类对象的私有成员了。但是注意不能把其他类的私有成员函数声明为友元。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> price; <span class="comment">//下面的俩fun函数都能访问price</span></span><br><span class="line">    <span class="function"><span class="keyword">friend</span> <span class="keyword">int</span> <span class="title">fun</span><span class="params">()</span></span>;  <span class="comment">//声明全局函数fun为友元</span></span><br><span class="line">    <span class="function"><span class="keyword">friend</span> <span class="keyword">void</span> <span class="title">B::fun</span><span class="params">()</span></span>;  <span class="comment">//声明B类的fun函数为友元</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></li>
+<li><p>友元类也类似，下面的声明让类 B 的所有成员函数都可以访问类 A 对象的私有成员。不过友元关系在类之间不能传递，即类 A 是类 B 的友元，类 B 是类 C 的友元，并不能导出类 A 是类 C 的友元。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> price;</span><br><span class="line">    <span class="keyword">friend</span> <span class="class"><span class="keyword">class</span> <span class="title">B</span>;</span>  <span class="comment">//声明B类为友元类</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="初始化列表"><a href="#初始化列表" class="headerlink" title="初始化列表"></a>初始化列表</h3><p>用于初始化成员变量，它早于构造函数执行。初始化顺序与变量声明顺序一样，跟初始化列表的顺序无关。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Point</span> &#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">float</span> x, y;</span><br><span class="line">    <span class="comment">//使用初始化列表进行初始化</span></span><br><span class="line">    Point(<span class="keyword">float</span> xx = <span class="number">0.0</span>, <span class="keyword">float</span> yy = <span class="number">0.0</span>): y(yy), x(xx) &#123;&#125;</span><br><span class="line">    <span class="comment">//调用无参构造器初始化+赋值，效率较低且麻烦</span></span><br><span class="line">    Point()&#123;&#125;</span><br><span class="line">    Point(<span class="keyword">float</span> xx = <span class="number">0.0</span>, <span class="keyword">float</span> yy = <span class="number">0.0</span>) &#123;x = xx; y = yy;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="拓展下new-amp-delete"><a href="#拓展下new-amp-delete" class="headerlink" title="拓展下new &amp; delete"></a>拓展下new &amp; delete</h3><p>new用来分配内存空间，delete则用来回收，在之前的Point类里加一个无参构造器方便演示这俩关键字：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Point::Point()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">this</span>-&gt;x = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">this</span>-&gt;y = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样就能用以下方式new一个Point数组出来，new的时候会调用上面的无参构造器：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;point.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Point* p10 = <span class="keyword">new</span> Point[<span class="number">10</span>];</span><br><span class="line">    p10[<span class="number">2</span>].print();</span><br><span class="line">    <span class="keyword">delete</span>[] p10;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>new和delete的一般用法：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> *i = <span class="keyword">new</span> <span class="keyword">int</span>;</span><br><span class="line"><span class="keyword">int</span> *i10 = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">10</span>];</span><br><span class="line">Point *s = <span class="keyword">new</span> Point();</span><br><span class="line">Point *s10 = <span class="keyword">new</span> Point[<span class="number">10</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">delete</span> i;</span><br><span class="line"><span class="keyword">delete</span>[] i10;</span><br><span class="line"><span class="keyword">delete</span> s;</span><br><span class="line"><span class="keyword">delete</span>[] s10;</span><br></pre></td></tr></table></figure>
+
+<p>注意不要用delete释放不是用new分配的空间，new和delete、new[]和delete[]必须配对使用。可以delete空指针，无事会发生。</p>
+<h3 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h3><p>搞个语法就好了</p>
+<p>重载</p>
+<p>只有c++干的奇怪的事：</p>
+<p>c++子类出现和父类同名同参数的函数，该函数与父类无关，并且父类其余函数会在子类中隐藏掉。除非父类有virtual</p>
+<p>默认参数</p>
+<p>只写在声明中，即一般在.h文件中写，cpp中不写，且默认参数只能写在参数列表最后。一般不建议使用。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">fun</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b = <span class="number">4</span>, <span class="keyword">int</span> c = <span class="number">5</span>)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">fun</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b = <span class="number">4</span>, <span class="keyword">int</span> c)</span></span>; <span class="comment">//错误</span></span><br></pre></td></tr></table></figure>
+
+<p>inline内联函数</p>
+<p>在编译阶段把函数嵌入调用他的地方，可减少调用负担，加快运行速度，但是整体程序会变长，是以空间换时间的一种优化方法。如果函数太长了，编译器有可能不允许内联，因为空间使用太多了。功能与C的宏类似，但比宏安全，因为内联函数能做类型检查。</p>
+<p>要在声明和定义的时候都加上inline，或者直接把函数体都放在头文件里，cpp用的时候include相应头文件即可。声明类的时候直接给出某些函数的实现（或者用：：+inline修饰），这些函数默认都是inline的，getter和setter都可以这么写。</p>
+<p>两三行的小函数、常被调用的函数可用inline，超过二十行的、递归的函数就不要用inline了。</p>
+<p> const</p>
+<p>const修饰的变量不能被改变，也因此必须被初始化。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> bufSize = <span class="number">512</span>; <span class="comment">//一般用法</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">char</span> * <span class="keyword">const</span> q = <span class="string">&quot;abc&quot;</span>; <span class="comment">//q这个地址是const</span></span><br><span class="line">*q = <span class="string">&quot;c&quot;</span>; <span class="comment">//正确</span></span><br><span class="line">q++; <span class="comment">//错误，q不能被改变</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">char</span> *p = <span class="string">&quot;sdf&quot;</span>; <span class="comment">//*p这个指针是const</span></span><br><span class="line">p++; <span class="comment">//正确，且现在p这个地址的变量（*p）不能被改变</span></span><br><span class="line">*p = <span class="string">&quot;ds&quot;</span>; <span class="comment">//错误， *p不能被改变</span></span><br></pre></td></tr></table></figure>
+
+<p>总是可以按const的方式对待non-const的变量：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">f</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> *x)</span></span>; <span class="comment">//意思是在f中不能改*a了，保证*a的安全</span></span><br><span class="line"><span class="keyword">int</span> a = <span class="number">15</span>;</span><br><span class="line"></span><br><span class="line">f(&amp;a); </span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> b = a; </span><br></pre></td></tr></table></figure>
+
+<h3 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h3><p>引用必须在定义时初始化，其实就是给当前变量起了个别名。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">//声明时使用引用</span></span><br><span class="line"><span class="keyword">int</span> x = <span class="number">3</span>;</span><br><span class="line"><span class="keyword">int</span> &amp;y = x; <span class="comment">//y改变则x也改变</span></span><br><span class="line"><span class="keyword">int</span> &amp;z = y; <span class="comment">//错误</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> &amp;z = x; <span class="comment">//注意z不可变，但x可变</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//引用作为参数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">fun</span><span class="params">(<span class="keyword">int</span> &amp;)</span></span>;</span><br><span class="line">fun(x);</span><br><span class="line">fun(x*<span class="number">3</span>); <span class="comment">//不建议引用中间结果，可能报错</span></span><br></pre></td></tr></table></figure>
+
+<p>引用本身不是一个对象，因此不存在引用的数组，不能定义指向引用的指针。但指针是对象，所以存在对指针的引用。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span> *p = &amp;x;</span><br><span class="line"><span class="keyword">int</span> *&amp;r = p; <span class="comment">//r是int类型指针p的引用</span></span><br></pre></td></tr></table></figure>
+
+<p>引用作为类成员</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">X</span>&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span>&amp; ref; <span class="comment">//声明的时候没办法赋初始值，因为不知道之后跟谁绑定</span></span><br><span class="line">    X(<span class="keyword">int</span>&amp; a);</span><br><span class="line">&#125;;</span><br><span class="line">X::X(<span class="keyword">int</span>&amp; a) : ref(a) &#123;&#125; <span class="comment">//所以必须在构造函数初始化列表中初始化</span></span><br></pre></td></tr></table></figure>
+
+<p>引用作为函数返回值，最好返回全局变量，否则离开这个函数引用就没意义了</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="keyword">double</span> <span class="built_in">array</span>[<span class="number">32</span>];</span><br><span class="line"><span class="function"><span class="keyword">double</span>&amp; <span class="title">subscript</span><span class="params">(<span class="keyword">const</span> <span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">array</span>[i];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>传不可变对象进函数的时候，用const reference，对象不会被修改且比传值高效</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Person(<span class="keyword">const</span> <span class="built_in">string</span>&amp; name, <span class="keyword">int</span> weight);  </span><br></pre></td></tr></table></figure>
+
+<h3 id="多态"><a href="#多态" class="headerlink" title="多态"></a>多态</h3><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">XYPos</span> &#123;</span> ... &#125;; <span class="comment">// x, y point</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Shape</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Shape();</span><br><span class="line">    <span class="keyword">virtual</span> ~Shape(); <span class="comment">// 为啥析构函数是virtual的，最后讲</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">render</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">render</span><span class="params">(<span class="keyword">int</span>)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">move</span><span class="params">(<span class="keyword">const</span> XYPos&amp;)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> Shape* <span class="title">copy</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> Shape&amp; <span class="title">clone</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> Shape <span class="title">self</span><span class="params">()</span></span>;</span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    XYPos center;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Ellipse</span> :</span> <span class="keyword">public</span> Shape &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Ellipse(<span class="keyword">float</span> maj, <span class="keyword">float</span> minr);</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">render</span><span class="params">()</span></span>; <span class="comment">// 父类同名同参函数是virtual的，子子孙孙都是virtual的</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">render</span><span class="params">(<span class="keyword">int</span>)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> Ellipse* <span class="title">copy</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> Ellipse&amp; <span class="title">clone</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> Ellipse <span class="title">self</span><span class="params">()</span></span>; <span class="comment">// 错误，只有指针和引用构成多态</span></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    <span class="keyword">float</span> major_axis, minor_axis;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Circle</span> :</span> <span class="keyword">public</span> Ellipse &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Circle(<span class="keyword">float</span> radius) : Ellipse(radius, radius)&#123;&#125;;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">render</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">render</span><span class="params">(<span class="keyword">int</span>)</span></span>; <span class="comment">// 必须重写所有重载函数，不能只有render()没有render(int)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">render</span><span class="params">(Shape* p)</span> </span>&#123; <span class="comment">// p也被称为多态对象</span></span><br><span class="line">    <span class="comment">// virtual的作用体现在这里，传进来指针或引用的时候，不要相信它的类型</span></span><br><span class="line">    <span class="comment">//传进来的不一定是Shape，可能是子类，所以要在运行时去看</span></span><br><span class="line">    p -&gt; render();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">func</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="function">Ellipse <span class="title">e</span><span class="params">(<span class="number">10</span>, <span class="number">20</span>)</span></span>;</span><br><span class="line">    e.render();</span><br><span class="line">    <span class="function">Circle <span class="title">c</span><span class="params">(<span class="number">40</span>)</span></span>;</span><br><span class="line">    c.render();</span><br><span class="line">    render(&amp;e);</span><br><span class="line">    render(&amp;c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Ellipse::render</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    Base::render(); <span class="comment">// 重写父类方法时可以调用父类方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>多态其实就是每个含有virtual函数的类保存了一个指针，叫vptr，指向一张保存自己virtual函数的vtable。这样在执行p -&gt; render()的时候，其实都只是根据指针去找到virtual的render函数，非常简单快捷，没有什么类类型判别转换什么的。这叫做动态绑定。</p>
+<p><img src="C:\Users\Renhang\Desktop\无标题.png"></p>
+<p>所以只要类中有一个virtual，那么析构函数就必须是virtual的，这样可以在析构时使用子类的析构函数。否则永远使用的是Shape::~Shape() （这叫做静态绑定）。别的OOP语言都是默认动态绑定的，C++不这么做来让自己的效率高一点。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Docker</title>
+    <url>/%E6%8A%80%E6%9C%AF/Docker/</url>
+    <content><![CDATA[<ul>
+<li><code>docker pull</code> 从镜像仓库中拉取或者更新指定镜像</li>
+</ul>
+<ul>
+<li><p><code>docker images [OPTIONS] [REPOSITORY[:TAG]]</code> 列出本地镜像<br>  OPTIONS说明：<br>  -a :列出本地所有的镜像（含中间映像层，默认情况下，过滤掉中间映像层）；<br>  –digests :显示镜像的摘要信息；<br>  -f :显示满足条件的镜像；<br>  -q :只显示镜像ID。</p>
+</li>
+<li><p><code>docker rmi [OPTIONS] IMAGE[:TAG] [IMAGE...]</code> 移除镜像<br>  OPTIONS说明：<br>  -f :强制删除；</p>
+</li>
+<li><p><code>docker start/stop/restart [OPTIONS] CONTAINER [CONTAINER...]</code> 启动/停止/重启</p>
+</li>
+<li><p><code>docker ps [OPTIONS]</code> 列出容器<br>  OPTIONS说明：<br>  -a :显示所有的容器，包括未运行的。<br>  -l :显示最近创建的容器。<br>  -n :列出最近创建的n个容器。<br>  -q :静默模式，只显示容器编号。<br>  -s :显示总的文件大小。</p>
+</li>
+<li><p><code>docker rm [OPTIONS] CONTAINER [CONTAINER...]</code> 删除容器<br>  OPTIONS说明：<br>  -f :通过 SIGKILL 信号强制删除一个运行中的容器。<br>  -l :移除容器间的网络连接，而非容器本身。<br>  -v :删除与容器关联的卷<br>  remove all stopped containers: docker rm $(docker ps -a -q)</p>
+</li>
+<li><p><code>docker exec [OPTIONS] CONTAINER COMMAND [ARG...]</code> 在活动或正在运行的容器中运行命令；<br>  OPTIONS说明：<br>  -d :分离模式: 在后台运行<br>  -i :即使没有附加也保持STDIN 打开<br>  -t :分配一个伪终端<br>  应用：</p>
+</li>
+</ul>
+<ol>
+<li>访问container的文件系统<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">docker exec -t -i mycontainer &#x2F;bin&#x2F;bash</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>dockerfile里面的依赖包例子：<br><a href="https://www.python-ldap.org/en/python-ldap-3.3.0/installing.html#build-prerequisites">https://www.python-ldap.org/en/python-ldap-3.3.0/installing.html#build-prerequisites</a></p>
+<h3 id="一些问题及解决"><a href="#一些问题及解决" class="headerlink" title="一些问题及解决"></a>一些问题及解决</h3><p>1）Windows起docker报错Ports are not available</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Error response from daemon: Ports are not available: listen</span><br><span class="line">tcp 0.0.0.0:9090: <span class="built_in">bind</span>: An attempt was made to access a socket <span class="keyword">in</span> a way forbidden by its access permissions.</span><br></pre></td></tr></table></figure>
+
+<p>解决方法：查看哪些端口被禁用了TCP</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">netsh interface ipv4 show excludedportrange protocol&#x3D;tcp</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git</title>
+    <url>/%E6%8A%80%E6%9C%AF/Git/</url>
+    <content><![CDATA[<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><ol>
+<li>安装 Git。 </li>
+<li>设置你的用户名和邮件地址。</li>
+</ol>
+  <figure class="highlight console"><table><tr><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git config --global user.name <span class="string">&quot;lam howard&quot;</span></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> git config --global user.email howard@example.com</span></span><br></pre></td></tr></table></figure>
+
+<p>每一个 Git 提交都会使用这些信息，它们会写入到你的每一次提交中。如果使用了 <code>--global</code> 选项，那么该命令只需要运行一次。</p>
+<ol start="3">
+<li>查看一下你的设置</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config --list</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>本地新建一个项目：<code>git init</code>，或从远程仓库clone一个项目到本地：<code>git clone ...</code></li>
+</ol>
+<h2 id="Basics"><a href="#Basics" class="headerlink" title="Basics"></a>Basics</h2><p>your local repository consists of three “trees” maintained by git.<br><img src="/images/git-trees.png"></p>
+<ol>
+<li>Working Directory: holds the actual files;<br> <code>git add filename</code><br> <code>git add *</code> add files<br> <code>git add .</code> 隐藏文件(.开头)也一起add<br> <code>git add -i</code> interactive adding</li>
+<li>Index: acts as a staging area;<br> <code>git commit -m &quot;comment&quot;</code></li>
+</ol>
+<p>  Use <code>git commit --amend</code> or <code>git commit --amend -m &quot;updated commit message&quot;</code> to modify the most recent commit. It lets you combine staged changes with the previous commit instead of creating an entirely new commit.</p>
+<ol>
+<li>HEAD: points to the last commit you’ve made.<br> <code>git push origin master(or other branch)</code><br> <code>git remote add origin &lt;server&gt;</code> 如果没有clone过用这个</li>
+</ol>
+<h2 id="git-diff"><a href="#git-diff" class="headerlink" title="git diff"></a>git diff</h2><ul>
+<li>diff compares your working directory with the staging area</li>
+<li>diff –cached compares your staging area with the latest     commit (or any named commit you supply)</li>
+<li>diff <commit_ID> compares your working directory     with the named commit (use HEAD for the latest commit)</li>
+<li>diff <commit_ID> <commit_ID> compares     (surprise) two named commits (for example, diff HEAD HEAD^ shows     the differences from the last two commits)</li>
+<li><img src="/images/git/git-diff.png"></li>
+</ul>
+<h2 id="Fetch-and-pull"><a href="#Fetch-and-pull" class="headerlink" title="Fetch and pull"></a>Fetch and pull</h2><ul>
+<li>Fetch: <code>git fetch origin</code><br>git fetch really only downloads new data from a remote repository - but it doesn’t integrate any of this new data into your working files. Fetch is great for getting a fresh view on all the things that happened in a remote repository.</li>
+<li>Pull: <code>git pull origin master</code><br>git pull, in contrast, is used with a different goal in mind: to update your current HEAD branch with the latest changes from the remote server. This means that pull not only downloads new data; it also directly integrates it into your current working copy files.</li>
+<li>git pull等价于git fetch, git merge FETCH_HEAD</li>
+<li>git pull –rebase等价于git fetch, git rebase FETCH_HEAD</li>
+</ul>
+<h2 id="Merge"><a href="#Merge" class="headerlink" title="Merge"></a>Merge</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">a - b - c - d   Master</span><br><span class="line">     \</span><br><span class="line">       e - f - g Feature</span><br></pre></td></tr></table></figure>
+<p>Before merging your code into one of your project’s long-running branches (like a “development” or “master” branch), make sure that your local repository is up to date:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">    a - b - c - d - h   Master</span><br><span class="line">         \</span><br><span class="line">           e - f - g Feature</span><br><span class="line"></span><br><span class="line">git fetch</span><br><span class="line">git branch -va</span><br><span class="line">  master             87eab46 [behind 1] Fix #332</span><br><span class="line">* feature            b320ab3 Ensure safe login</span><br></pre></td></tr></table></figure>
+<p>The [behind 1] remark tells us that “master” has received new changes on the remote. We must update “master” before we can integrate our own changes.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git checkout master</span><br><span class="line">git pull</span><br></pre></td></tr></table></figure>
+<p>The last thing to check before actually starting the merge process is our current HEAD branch: we need to make sure that we’ve checked out the branch that should <em>receive</em> the changes: <code>git checkout master</code><br>Merge:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git merge feature</span><br><span class="line"></span><br><span class="line">    a - b - c - d - h - i   Master</span><br><span class="line">         \             &#x2F;</span><br><span class="line">           e -  f -  g      Feature</span><br></pre></td></tr></table></figure>
+<p>After merging, do git add, commit, push.</p>
+<h2 id="Rebase"><a href="#Rebase" class="headerlink" title="Rebase"></a>Rebase</h2><p><img src="/images/git/before-rebase.png"></p>
+<p>跟merge作用类似，但能让git历史记录变得更简单。rebasing <em>re-writes</em> the project history by creating brand new commits for each commit in the original branch. 不要在公共分支上rebase</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git checkout feature</span><br><span class="line">git rebase master</span><br></pre></td></tr></table></figure>
+<p>不断修改冲突然后按提示做如下操作直至rebase完成</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git add myfile.txt</span><br><span class="line">git rebase --continue</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/git/rebase.png"></p>
+<p>Interactive rebasing gives you the opportunity to alter commits as they are moved to the new branch. Typically, this is used to clean up a messy history before merging a feature branch into <code>main</code>.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git checkout feature</span><br><span class="line">git rebase -i main</span><br></pre></td></tr></table></figure>
+
+<p>得到</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pick 33d5b7a Message for commit #1</span><br><span class="line">pick 9480b3d Message for commit #2</span><br><span class="line">pick 5c67e61 Message for commit #3</span><br></pre></td></tr></table></figure>
+
+<p>if the 2nd commit fixes a small problem in the 1st commit, you can condense them into a single commit with the <code>fixup</code> command:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pick 33d5b7a Message for commit #1</span><br><span class="line">fixup 9480b3d Message for commit #2</span><br><span class="line">pick 5c67e61 Message for commit #3</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/git/rebase-i.png"></p>
+<p>清理自己branch</p>
+<p>git checkout feature git rebase -i HEAD~3</p>
+<p><img src="/images/git/rebase-self.png"></p>
+<h2 id="Branching"><a href="#Branching" class="headerlink" title="Branching"></a>Branching</h2><p><img src="/images/git-branches.png"><br>create a new branch named “feature_x” and switch to it using<br><code>git checkout -b feature_x</code><br>switch back to master<br><code>git checkout master</code><br>and delete the branch again<br><code>git branch -d feature_x</code><br>a branch is not available to others unless you push the branch to your remote repository<br><code>git push origin &lt;branch&gt;</code></p>
+<h2 id="Stash"><a href="#Stash" class="headerlink" title="Stash"></a>Stash</h2><p>commit完后，开始写新的东西，但是发现上次commit的有错漏，就可以用stash暂存当前的改动，然后去改上次的commit，最后stash pop回到写的新的东西。</p>
+<ol>
+<li>To save your uncommitted changes: <code>git stash</code></li>
+<li>做一些改动</li>
+<li>Now add them to the last commit:<br><code>git add -u</code> -u means update<br><code>git commit --amend</code></li>
+<li>To list your saved stashes: <code>git stash list</code></li>
+<li>To apply saved stashes<ul>
+<li>To apply a stash and remove it from the stash list: <code>git stash pop stash@&#123;x&#125;</code></li>
+<li>To apply a stash and keep it in the stash list: <code>git stash apply stash@&#123;x&#125;</code></li>
+</ul>
+</li>
+</ol>
+<h2 id="Clean"><a href="#Clean" class="headerlink" title="Clean"></a>Clean</h2><p><code>git clean</code> is a builtin command to cleanup the untracked files. Be careful with this one, it deletes files permanently! Always add -n or –dry-run options to preview.</p>
+<ul>
+<li>If you just clean untracked files, run <code>git clean -f</code></li>
+<li>If you want to also remove directories, run <code>git clean -f -d</code></li>
+<li>If you just want to remove ignored files, run <code>git clean -f -X</code></li>
+<li>If you want to remove ignored as well as non-ignored files, run <code>git clean -f -x</code></li>
+</ul>
+<h2 id="Undo"><a href="#Undo" class="headerlink" title="Undo"></a>Undo</h2><h4 id="undo-a-single-file"><a href="#undo-a-single-file" class="headerlink" title="undo a single file"></a>undo a single file</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git checkout &lt;commit_ID&gt; &lt;file&gt;</span><br></pre></td></tr></table></figure>
+
+<p>Check out a previous version of a file. This turns the <file> that resides in the working directory into an exact copy of the one from <commit> and adds it to the staging area.</p>
+<h4 id="revert"><a href="#revert" class="headerlink" title="revert"></a>revert</h4><p>The git revert command undoes a committed snapshot. But, instead of removing the commit from the project history, it figures out how to undo the changes introduced by the commit and appends a new commit with the resulting content.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git revert &lt;commit&gt;</span><br></pre></td></tr></table></figure>
+
+<p>Generate a new commit that undoes all of the changes introduced in <commit>, then apply it to the current branch.</p>
+<p>Reverting should be used when you want to remove an entire commit from your project history. This can be useful, for example, if you’re tracking down a bug and find that it was introduced by a single commit. Instead of manually going in, fixing it, and committing a new snapshot, you can use git revert to automatically do all of this for you.</p>
+<p>Reverting can be visualized like this in the commit history, where we are reverting the commit with the “x” mark and creating a <strong>new commit without such change</strong>:</p>
+<p><img src="/images/git/git-revert.png"></p>
+<h4 id="git-reset"><a href="#git-reset" class="headerlink" title="git reset"></a>git reset</h4><p>Like git checkout, git reset is a versatile command with many configurations. It can be used to remove committed snapshots, although it’s more often used to undo changes in the staging area and the working directory. In either case, it should only be used to undo local changes—you should never reset snapshots that have been shared with other developers.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git reset &lt;file&gt;</span><br></pre></td></tr></table></figure>
+
+<p>Remove the specified file from the staging area</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git reset</span><br></pre></td></tr></table></figure>
+
+<p>Reset the staging area to match the most recent commit</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git reset --hard</span><br></pre></td></tr></table></figure>
+
+<p>Reset the staging area and the working directory to match the most recent commit. This <em>obliterates</em> all uncommitted changes.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git reset &lt;commit_ID&gt;</span><br></pre></td></tr></table></figure>
+
+<p>Move the current branch tip backward to <commit>, reset the staging area to match.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git reset --hard &lt;commit_ID&gt; </span><br></pre></td></tr></table></figure>
+
+<p>Move the current branch tip backward to <commit> and reset both the staging area and the working directory to match. This obliterates not only the uncommitted changes, but all commits after <commit>, as well.</p>
+<p>Resetting can be visualized like this in the commit history:</p>
+<p><img src="/images/git/git-reset.png"></p>
+<h2 id="Git-ignore"><a href="#Git-ignore" class="headerlink" title="Git ignore"></a>Git ignore</h2><p>Use .gitignore file to avoid tracking all files in the working directory.</p>
+<table>
+
+<thead>
+
+<tr>
+
+<th width="31%">Pattern</th>
+
+<th width="39%">Example matches</th>
+
+<th width="30%">Explanation</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td>**/logs</td>
+
+<td>logs/debug.log  
+logs/monday/foo.bar  
+build/logs/debug.log</td>
+
+<td>You can prepend a pattern with a double asterisk to match directories anywhere in the repository.</td>
+
+</tr>
+
+<tr>
+
+<td>**/logs/debug.log</td>
+
+<td>logs/debug.log  
+build/logs/debug.log  
+but not  
+logs/build/debug.log</td>
+
+<td>You can also use a double asterisk to match files based on their name and the name of their parent directory.</td>
+
+</tr>
+
+<tr>
+
+<td>*.log</td>
+
+<td>debug.log  
+foo.log  
+.log  
+logs/debug.log</td>
+
+<td>An asterisk is a wildcard that matches zero or more characters.</td>
+
+</tr>
+
+<tr>
+
+<td>*.log  
+!important.log</td>
+
+<td>debug.log  
+trace.log  
+but not  
+important.log  
+logs/important.log</td>
+
+<td>Prepending an exclamation mark to a pattern negates it. If a file matches a pattern, but _also_ matches a negating pattern defined later in the file, it will not be ignored.</td>
+
+</tr>
+
+<tr>
+
+<td>*.log  
+!important/*.log  
+trace.*</td>
+
+<td>debug.log  
+important/trace.log  
+but not  
+important/debug.log</td>
+
+<td>Patterns defined after a negating pattern will re-ignore any previously negated files.</td>
+
+</tr>
+
+<tr>
+
+<td>/debug.log</td>
+
+<td>debug.log  
+but not  
+logs/debug.log</td>
+
+<td>Prepending a slash matches files only in the repository root.</td>
+
+</tr>
+
+<tr>
+
+<td>debug.log</td>
+
+<td>debug.log  
+logs/debug.log</td>
+
+<td>By default, patterns match files in any directory</td>
+
+</tr>
+
+<tr>
+
+<td>debug?.log</td>
+
+<td>debug0.log  
+debugg.log  
+but not  
+debug10.log</td>
+
+<td>A question mark matches exactly one character.</td>
+
+</tr>
+
+<tr>
+
+<td>debug[0-9].log</td>
+
+<td>debug0.log  
+debug1.log  
+but not  
+debug10.log</td>
+
+<td>Square brackets can also be used to match a single character from a specified range.</td>
+
+</tr>
+
+<tr>
+
+<td>debug[01].log</td>
+
+<td>debug0.log  
+debug1.log  
+but not  
+debug2.log  
+debug01.log</td>
+
+<td>Square brackets match a single character form the specified set.</td>
+
+</tr>
+
+<tr>
+
+<td>debug[!01].log</td>
+
+<td>debug2.log  
+but not  
+debug0.log  
+debug1.log  
+debug01.log</td>
+
+<td>An exclamation mark can be used to match any character except one from the specified set.</td>
+
+</tr>
+
+<tr>
+
+<td>debug[a-z].log</td>
+
+<td>debuga.log  
+debugb.log  
+but not  
+debug1.log</td>
+
+<td>Ranges can be numeric or alphabetic.</td>
+
+</tr>
+
+<tr>
+
+<td>logs</td>
+
+<td>logs  
+logs/debug.log  
+logs/latest/foo.bar  
+build/logs  
+build/logs/debug.log</td>
+
+<td>If you don't append a slash, the pattern will match both files and the contents of directories with that name. In the example matches on the left, both directories and files named _logs_ are ignored</td>
+
+</tr>
+
+<tr>
+
+<td>logs/</td>
+
+<td>logs/debug.log  
+logs/latest/foo.bar  
+build/logs/foo.bar  
+build/logs/latest/debug.log</td>
+
+<td>Appending a slash indicates the pattern is a directory. The entire contents of any directory in the repository matching that name – including all of its files and subdirectories – will be ignored</td>
+
+</tr>
+
+<tr>
+
+<td>logs/  
+!logs/important.log</td>
+
+<td>logs/debug.log  
+logs/important.log</td>
+
+<td>logs/important.log will be ignored and won't be negated due to a performance-related quirk in Git, you _can not_ negate a file that is ignored due to a pattern matching a directory</td>
+
+</tr>
+
+<tr>
+
+<td>logs/**/debug.log</td>
+
+<td>logs/debug.log  
+logs/monday/debug.log  
+logs/monday/pm/debug.log</td>
+
+<td>A double asterisk matches zero or more directories.</td>
+
+</tr>
+
+<tr>
+
+<td>logs/*day/debug.log</td>
+
+<td>logs/monday/debug.log  
+logs/tuesday/debug.log  
+but not  
+logs/latest/debug.log</td>
+
+<td>Wildcards can be used in directory names as well.</td>
+
+</tr>
+
+<tr>
+
+<td>logs/debug.log</td>
+
+<td>logs/debug.log  
+but not  
+debug.log  
+build/logs/debug.log</td>
+
+<td>Patterns specifying a file in a particular directory are relative to the repository root. (You can prepend a slash if you like, but it doesn't do anything special.)</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
+<p>In addition to these characters, you can use # to include comments in your .gitignore file:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># ignore all logs:</span><br><span class="line">*.log</span><br></pre></td></tr></table></figure>
+
+<p>You can use \ to escape .gitignore pattern characters if you have files or directories containing them:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># ignore the file literally named foo[01].txt:</span><br><span class="line">foo\[01\].txt</span><br></pre></td></tr></table></figure>
+
+<p>Ignore previously committed files:<br><code>git rm --cached xxx</code><br>You can omit the –cached option if you want to delete the file from both the repository and your local file system.</p>
+<p>To untrack every file in .gitignore, first commit any outstanding code changes, and then run:<br><code>git rm -r --cached .</code><br>then add and commit</p>
+<p><a href="https://www.toptal.com/developers/gitignore">自动生成gitignore文件</a></p>
+<h2 id="cherry-pick"><a href="#cherry-pick" class="headerlink" title="cherry-pick"></a>cherry-pick</h2><p>Cherry picking is the act of picking a commit from a branch and applying it to another. </p>
+<p>应用场景</p>
+<p>1）a commit is accidently made to the wrong branch. You can switch to the correct branch and cherry-pick the commit to where it should belong.</p>
+<p>2）合作者的commit是自己可以复用的代码，直接cherry-pick过来</p>
+<p>3）搞新feature的时候发现老代码有bug，直接在新feature的branch上修好bug，提一个commit，再cherry-pick到main分支做hotfix。不需要再建修bug的branch然后一通操作，就很乱。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">a - b - c - d   Master</span><br><span class="line">      \</span><br><span class="line">        e - f - g Feature</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 切换到 master 分支</span><br><span class="line">$ git checkout master</span><br><span class="line"></span><br><span class="line"># Cherry pick 操作，f 可以是哈希值，也可以是分支名</span><br><span class="line">$ git cherry-pick f</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">a - b - c - d - f&#39;   Master</span><br><span class="line">     \</span><br><span class="line">       e - f - g Feature</span><br></pre></td></tr></table></figure>
+<p>一次转移多个提交：<br><code>git cherry-pick &lt;HashA&gt; &lt;HashB&gt;</code></p>
+<p>如果想要转移一系列的连续提交，可以使用下面的简便语法。<br><code>git cherry-pick A..Z</code><br>上面的命令可以转移从 A 到 Z 的所有提交。它们必须按照正确的顺序放置：提交 A 必须早于提交 Z，否则命令将失败，但不会报错。<br>注意，使用上面的命令，提交 A 将不会包含在 Cherry pick 中。如果要包含提交 A，可以使用下面的语法。<br><code>git cherry-pick A^..Z</code> </p>
+<br/>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="https://rogerdudler.github.io/git-guide/">https://rogerdudler.github.io/git-guide/</a></li>
+<li><a href="https://stackoverflow.com/questions/20537223/what-is-the-intended-use-case-for-git-stash">https://stackoverflow.com/questions/20537223/what-is-the-intended-use-case-for-git-stash</a></li>
+<li><a href="https://www.atlassian.com/git/tutorials/learn-git-with-bitbucket-cloud">https://www.atlassian.com/git/tutorials/learn-git-with-bitbucket-cloud</a></li>
+<li><a href="https://coderwall.com/p/g16jpq/keep-your-git-directory-clean-with-git-clean-and-git-trash">https://coderwall.com/p/g16jpq/keep-your-git-directory-clean-with-git-clean-and-git-trash</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/2020/04/git-cherry-pick.html">http://www.ruanyifeng.com/blog/2020/04/git-cherry-pick.html</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Kafka</title>
+    <url>/%E6%8A%80%E6%9C%AF/Kafka/</url>
+    <content><![CDATA[<p>list topics:<br>bash /data/kafka/bin/kafka-topics.sh –bootstrap-server 172.27.65.90:9092 –list</p>
+<p>env:<br>cat /data/data-mid-end-scripts/scripts/kafka/apaylater/sg/env.sh</p>
+<p>topics:<br>bash /data/data-mid-end-scripts/scripts/kafka/apaylater/sg/v2.9.0/create_topics.sh<br>bash /data/kafka/bin/kafka-topics.sh –bootstrap-server 172.27.65.90:9092 –delete –topic topic_name</p>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>Kafka</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Kubernetes</title>
+    <url>/%E6%8A%80%E6%9C%AF/Kubernetes/</url>
+    <content><![CDATA[<h2 id="Kubernetes-对象"><a href="#Kubernetes-对象" class="headerlink" title="Kubernetes 对象"></a>Kubernetes 对象</h2><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>在 Kubernetes 系统中，Kubernetes 对象（object） 是持久化的实体。 Kubernetes 使用这些实体去表示整个集群的状态。特别地，它们描述了如下信息：</p>
+<ol>
+<li>哪些容器化应用在运行（以及在哪些节点上）</li>
+<li>可以被应用使用的资源</li>
+<li>关于应用运行时表现的策略，比如重启策略、升级策略，以及容错策略</li>
+</ol>
+<p>一旦创建对象，Kubernetes 系统将持续工作以确保对象存在。 通过创建对象，本质上是在告知 Kubernetes 系统，所需要的集群工作负载看起来是什么样子的， 这就是 Kubernetes 集群的 期望状态（Desired State）。</p>
+<p>几乎每个 Kubernetes 对象包含两个嵌套的对象字段，它们负责管理对象的配置： 对象 spec（规约） 和 对象 status（状态）。 对于具有 spec 的对象，你必须在创建对象时设置其内容，描述你希望对象所具有的特征： 期望状态（Desired State）。</p>
+<p>status 描述了对象的 当前状态（Current State），它是由 Kubernetes 系统和组件 设置并更新的。在任何时刻，Kubernetes 控制平面 都一直积极地管理着对象的实际状态，以使之与期望状态相匹配。</p>
+<h3 id="对象管理"><a href="#对象管理" class="headerlink" title="对象管理"></a>对象管理</h3><p>kubectl 工具能够支持三种对象管理方式：</p>
+<ol>
+<li>指令式命令 (Imperative commands)</li>
+<li>指令式对象配置 (Imperative object configuration)</li>
+<li>声明式对象配置 (Declarative object configuration)</li>
+</ol>
+<h4 id="指令式命令"><a href="#指令式命令" class="headerlink" title="指令式命令"></a>指令式命令</h4><ol>
+<li>创建对象<br>run：创建一个新的 Pod 来运行一个容器。<br>expose：创建一个新的 Service 对象为若干 Pod 提供流量负载均衡。<br>autoscale：创建一个新的 Autoscaler 对象来自动对某控制器（如 Deployment） 执行水平扩缩。</li>
+<li>更新对象<br>scale：对某控制器进行水平扩缩以便通过更新控制器的副本个数来添加或删除 Pod。<br>annotate：为对象添加或删除注解。<br>label：为对象添加或删除标签。<br>kubectl 命令也支持由对象的某一方面来驱动的更新命令。 设置对象的这一方面可能对不同类别的对象意味着不同的字段：<br>set &lt;字段&gt;：设置对象的某一方面。<br>kubectl 工具支持以下额外的方式用来直接更新现时对象，不过这些操作要求 用户对 Kubernetes 对象的模式定义有很好的了解：<br>edit：通过在编辑器中打开现时对象的配置，直接编辑其原始配置。<br>patch：通过使用补丁字符串（Patch String）直接更改某现时对象的的特定字段。</li>
+<li>删除对象<br>delete &lt;类别&gt;/&lt;名称&gt;</li>
+<li>查看对象信息<br>get：打印匹配到的对象的基本信息。使用 get -h 可以查看选项列表。<br>describe：打印匹配到的对象的详细信息的汇集版本。<br>logs：打印 Pod 中运行的容器的 stdout 和 stderr 输出。</li>
+</ol>
+<ol>
+<li><a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.21/#-strong-api-overview-strong-">Kubernetes API</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>k8s</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java基础-数组与集合</title>
+    <url>/%E6%8A%80%E6%9C%AF/Java%E5%9F%BA%E7%A1%80-%E6%95%B0%E7%BB%84%E4%B8%8E%E9%9B%86%E5%90%88/</url>
+    <content><![CDATA[<h2 id="1-数组"><a href="#1-数组" class="headerlink" title="1 数组"></a>1 数组</h2><p>Arrays工具类提供的常用静态方法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">List&lt;T&gt; <span class="title">asList</span><span class="params">(T... a)</span></span>; <span class="comment">//返回由指定数组构成的列表</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">binarySearch</span><span class="params">(Object[] a, Object key)</span></span>; <span class="comment">//使用二分查找元素的索引</span></span><br><span class="line">T[] copyOfRange(T[] original, <span class="keyword">int</span> from, <span class="keyword">int</span> to); <span class="comment">//复制数组，并且指定开始/结束索引</span></span><br><span class="line">T[] copyOf(T[] original, <span class="keyword">int</span> newLength); <span class="comment">//复制数组，并且指定复制长度</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">fill</span><span class="params">(Object[] a, Object val)</span></span>; <span class="comment">//使用指定元素填充数组</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">fill</span><span class="params">(Object[] a, <span class="keyword">int</span> fromIndex, <span class="keyword">int</span> toIndex, Object val)</span></span>; <span class="comment">//使用指定数组填充数组，并且指定填充的开始/结束索引</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sort</span><span class="params">(Object[] a)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sort</span><span class="params">(Object[] a, <span class="keyword">int</span> fromIndex, <span class="keyword">int</span> toIndex)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sort</span><span class="params">(T[] a, Comparator&lt;? <span class="keyword">super</span> T&gt; c)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sort</span><span class="params">(T[] a, <span class="keyword">int</span> fromIndex, <span class="keyword">int</span> toIndex, Comparator&lt;? <span class="keyword">super</span> T&gt; c)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>二维数组</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//创建二维数组</span></span><br><span class="line">type[][] arrayName;</span><br><span class="line"><span class="comment">//初始化二维数组</span></span><br><span class="line">type[][] arrayName = <span class="keyword">new</span> type[][]&#123;&#123;值<span class="number">1</span>,值<span class="number">2</span>,,...,值n&#125;,&#123;值<span class="number">1</span>,值<span class="number">2</span>,...,值m&#125;,...&#125;;    <span class="comment">// 在定义时初始化</span></span><br><span class="line">type[][] arrayName = <span class="keyword">new</span> type[size1][size2];    <span class="comment">// 给定空间，在赋值</span></span><br><span class="line">type[][] arrayName = <span class="keyword">new</span> type[size][];    <span class="comment">// 数组第二维长度为空，可变化</span></span><br><span class="line"><span class="comment">//遍历</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">double</span>[][] class_score = &#123;&#123;<span class="number">100</span>, <span class="number">99</span>, <span class="number">99</span>&#125;, &#123;<span class="number">100</span>, <span class="number">98</span>, <span class="number">97</span>&#125;, &#123;<span class="number">100</span>, <span class="number">100</span>, <span class="number">99.5</span>&#125;, &#123;<span class="number">99.5</span>, <span class="number">99</span>, <span class="number">98.5</span>&#125;&#125;;</span><br><span class="line">    <span class="comment">//方法1</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>;i &lt; class_score.length;i++) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j=<span class="number">0</span>; j &lt; class_score[i].length; j++) &#123;</span><br><span class="line">            <span class="comment">//处理class_score[i][j]</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//方法2</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">double</span>[] row : class_score) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">double</span> value : row) &#123;</span><br><span class="line">            <span class="comment">//处理value</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//快速打印二维数组</span></span><br><span class="line">    System.out.println(Arrays.deepToString(class_score));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-Collection"><a href="#2-Collection" class="headerlink" title="2 Collection"></a>2 Collection</h2><p>Collection是Java集合类的一个重要接口。</p>
+<p>Collection的一些常用方法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E element)</span></span>; <span class="comment">//向集合中添加元素，导致集合改变则返回true</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">remove</span><span class="params">(Object obj)</span></span>; <span class="comment">//有匹配的对象被删除，返回true</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">clear</span><span class="params">()</span></span>; <span class="comment">//从集合中删除所有元素</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">size</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">booleans <span class="title">contains</span><span class="params">(Object obj)</span></span>;</span><br><span class="line">Object[] toArray();</span><br><span class="line"><span class="function">Iterator&lt;E&gt; <span class="title">iterator</span><span class="params">()</span></span>; <span class="comment">//返回迭代器，用于遍历集合元素</span></span><br></pre></td></tr></table></figure>
+
+<p> Iterator接口包含4个方法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">E <span class="title">next</span><span class="params">()</span></span>; <span class="comment">//反复调用以逐个访问集合元素，到达集合末尾后抛出NoSuchElementException，所以要配合hasNext使用</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">hasNext</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span></span>; <span class="comment">//删除上次调用next方法时返回的元素。不能连续调用remove，需要再调用一次next以找到下一个元素再删除</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">forEachRemaining</span><span class="params">(Consumer&lt;? <span class="keyword">super</span> E&gt; action)</span></span>; <span class="comment">//用lambda表达式处理迭代器的每一个元素</span></span><br></pre></td></tr></table></figure>
+
+<p>遍历方式：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Collection&lt;String&gt; c = ...;</span><br><span class="line"></span><br><span class="line"><span class="comment">//iterator方式1</span></span><br><span class="line">Iterator&lt;String&gt; iter = c.iterator();</span><br><span class="line"><span class="keyword">while</span> (iter.hasNext()) &#123;</span><br><span class="line">    String element = iter.next();</span><br><span class="line">    <span class="comment">//do something with element</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//iterator方式2</span></span><br><span class="line">iter.forEachRemaining(element -&gt; ...);</span><br><span class="line"></span><br><span class="line"><span class="comment">//for each方式，编译器会将它转换为迭代器方式</span></span><br><span class="line"><span class="keyword">for</span> (String element: c) &#123;</span><br><span class="line">    <span class="comment">//do something with element</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-1-List"><a href="#2-1-List" class="headerlink" title="2.1 List"></a>2.1 List</h3><p>List可以按任意顺序访问元素，这种方式被称为随机访问(random access)。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> index, E element)</span></span>;</span><br><span class="line"><span class="function">E <span class="title">remove</span><span class="params">(<span class="keyword">int</span> index)</span></span>; <span class="comment">//删除并返回指定位置的元素</span></span><br><span class="line"><span class="function">E <span class="title">get</span><span class="params">(<span class="keyword">int</span> index)</span></span>;</span><br><span class="line"><span class="function">E <span class="title">set</span><span class="params">(<span class="keyword">int</span> index, E element)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">indexOf</span><span class="params">(Object element)</span></span>; <span class="comment">//返回指定元素第一次出现的位置，没有则返回-1</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">lastIndexOf</span><span class="params">(Object element)</span></span>; <span class="comment">//返回指定元素最后一次出现的位置，没有则返回-1</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-1-1-ArrayList"><a href="#2-1-1-ArrayList" class="headerlink" title="2.1.1 ArrayList"></a>2.1.1 ArrayList</h4><p>ArrayList、Vector改查效率高。在不需要线程同步时使用ArrayList，需要时使用Vector。ArrayList使用数组实现，是容量可变的非线程安全列表，随机访问快，集合扩容时会创建更大的数组，把原有数组复制到新数组。</p>
+<h4 id="2-1-2-LinkedList"><a href="#2-1-2-LinkedList" class="headerlink" title="2.1.2 LinkedList"></a>2.1.2 LinkedList</h4><p>LinkedList本质是双向链表，增删效率比数组和ArrayList高，一些基本方法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">addFirst</span><span class="params">(E element)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">addLast</span><span class="params">(E element)</span></span>;</span><br><span class="line"><span class="function">E <span class="title">getFirst</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">E <span class="title">getLast</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">E <span class="title">removeFirst</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">E <span class="title">removeLast</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>如果知道元素在链表中的索引，当然可以直接用List的增删方法。但一般情况下需要使用迭代器遍历链表以添加元素，这时最方便的是使用继承了Iterator的ListIterator接口，它新增了以下方法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">E <span class="title">previous</span><span class="params">()</span></span>; <span class="comment">//配合hasPrevious反向遍历链表</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">hasPrevious</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(E newElement)</span></span>; <span class="comment">//在当前位置前添加一个元素</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">set</span><span class="params">(E newElement)</span></span>; <span class="comment">//用新元素替换next或previous访问的上一个元素</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">nextIndex</span><span class="params">()</span></span>; <span class="comment">//返回下一次调用next时将返回的元素的索引</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">previousIndex</span><span class="params">()</span></span>; <span class="comment">//返回下一次调用previous时将返回的元素的索引</span></span><br></pre></td></tr></table></figure>
+<p>ListIterator小例子，把偶数元素变成0，-1：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">List&lt;Integer&gt; nums = <span class="keyword">new</span> LinkedList&lt;&gt;(Arrays.asList(<span class="number">1</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">9</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">8</span>,<span class="number">2</span>));</span><br><span class="line">ListIterator&lt;Integer&gt; numIter = nums.listIterator();</span><br><span class="line"><span class="keyword">while</span> (numIter.hasNext()) &#123;</span><br><span class="line">    <span class="keyword">int</span> num = numIter.next();</span><br><span class="line">    <span class="keyword">if</span> (num % <span class="number">2</span> == <span class="number">0</span>) &#123;</span><br><span class="line">        numIter.set(<span class="number">0</span>);</span><br><span class="line">        numIter.add(-<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果为[1, 0, -1, 7, 9, 3, 5, 0, -1, 0, -1]。这个例子里先add再set不行，因为add会改变链表结构，set就会抛出异常。</p>
+<h4 id="2-1-3-Stack"><a href="#2-1-3-Stack" class="headerlink" title="2.1.3 Stack"></a>2.1.3 Stack</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">E <span class="title">peek</span><span class="params">()</span></span>; <span class="comment">//查看栈顶对象，但不移除。栈为空时不要调用</span></span><br><span class="line"><span class="function">E <span class="title">pop</span><span class="params">()</span></span>; <span class="comment">//移除栈顶对象并返回。栈为空时不要调用</span></span><br><span class="line"><span class="function">E <span class="title">push</span><span class="params">(E element)</span></span>; <span class="comment">//压栈</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-Set"><a href="#2-2-Set" class="headerlink" title="2.2 Set"></a>2.2 Set</h3><h4 id="2-2-1-HashSet"><a href="#2-2-1-HashSet" class="headerlink" title="2.2.1 HashSet"></a>2.2.1 HashSet</h4><p>底层采用 HashMap 来保存元素，线程不安全，可以存储 null 值。当把对象加入HashSet时，HashSet会先计算对象的hashcode值来判断对象加入的位置，同时也会与其他hashcode值作比较，如果没有相符的 hashcode，HashSet 会假设对象没有重复出现。但是如果发现有相同 hashcode 值的对象，会调用equals()方法来检查 hashcode 相等的对象是否真的相同。如果两者相同，HashSet 就不会让加入操作成功。</p>
+<h4 id="2-2-2-TreeSet"><a href="#2-2-2-TreeSet" class="headerlink" title="2.2.2 TreeSet"></a>2.2.2 TreeSet</h4><p>树集是一个有序集合，通过 TreeMap 实现的，底层数据结构是红黑树。遍历时，值将自动按照排序后的顺序呈现。</p>
+<h3 id="2-3-Queue"><a href="#2-3-Queue" class="headerlink" title="2.3 Queue"></a>2.3 Queue</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">offer</span><span class="params">(E element)</span></span>; <span class="comment">//队列未满，元素将被添加到队尾并返回true；队列已满，返回false，而add方法会抛出异常</span></span><br><span class="line"><span class="function">E <span class="title">poll</span><span class="params">()</span></span>; <span class="comment">//队列不空，则删除并返回队头元素；队列为空，返回null，而remove方法会抛出异常</span></span><br><span class="line"><span class="function">E <span class="title">peek</span><span class="params">()</span></span>; <span class="comment">//队列不空，返回队头元素；队列为空，返回null，而element方法会抛出异常</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-Map"><a href="#3-Map" class="headerlink" title="3 Map"></a>3 Map</h2><p>Map也是Java集合的重要接口。Map的一些常用方法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">size</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">containsKey</span><span class="params">(Object key)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">containsValue</span><span class="params">(Object value)</span></span>;</span><br><span class="line"><span class="function">V <span class="title">put</span><span class="params">(K key, V value)</span></span>; <span class="comment">//返回key对应的前一个value，</span></span><br><span class="line"><span class="function">V <span class="title">get</span><span class="params">(K key)</span></span>; <span class="comment">//没有key则返回null</span></span><br><span class="line"><span class="function">V <span class="title">getOrDefault</span><span class="params">(K key, V defalutValue)</span></span>; <span class="comment">//没有key则返回默认值</span></span><br><span class="line"><span class="function">Set&lt;K&gt; <span class="title">keySet</span><span class="params">()</span></span>; <span class="comment">//键集</span></span><br><span class="line"><span class="function">Collection&lt;V&gt; <span class="title">values</span><span class="params">()</span></span>; <span class="comment">//值的collection，不是set</span></span><br><span class="line">Set&lt;Map.Entry&lt;K, V&gt;&gt; entrySet(); <span class="comment">//键值对集</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">forEach</span><span class="params">(BiConsumer&lt;? <span class="keyword">super</span> K, ? <span class="keyword">super</span> V&gt; action)</span></span>; <span class="comment">//对所有键值对应用这个action</span></span><br></pre></td></tr></table></figure>
+
+<p>键值对遍历：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//方法1</span></span><br><span class="line"><span class="keyword">for</span> (Map.Entry&lt;String, String&gt; entry: myMap.entrySet()) &#123;</span><br><span class="line">    <span class="comment">//用entry.getKey(), entry.getValue(), entry.setValue()处理键值对</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//方法2</span></span><br><span class="line">myMap.forEach((k, v) -&gt; &#123;</span><br><span class="line">    <span class="comment">//处理键值对</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>更新map键值对例子：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//统计词频，结果存于counts这个map中</span></span><br><span class="line">counts.put(word, counts.getOrDefault(word, <span class="number">0</span>) + <span class="number">1</span>); <span class="comment">//方法1</span></span><br><span class="line">counts.merge(word, <span class="number">1</span>, Integer::sum); <span class="comment">//方法2</span></span><br></pre></td></tr></table></figure>
+
+<p>第二个方法中的merge，如果get(key)非null，则将函数应用到get(key)和value上，结果非null则更新键值对，若结果为null则删除这个键；若get(key)为null，则将get(key)更新为value。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">V <span class="title">merge</span><span class="params">(K key, V value, BiFunction&lt;? <span class="keyword">super</span> V, ? <span class="keyword">super</span> V, extends V&gt; remappingFunction)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-1-HashMap"><a href="#3-1-HashMap" class="headerlink" title="3.1 HashMap"></a>3.1 HashMap</h3><p>HashMap是Hashtable的轻量级实现，线程不安全。HashMap允许key和value为null，但最多允许一条记录的key为null。JDK1.8 之前 HashMap 由数组+链表组成的，数组是 HashMap 的主体，链表则是主要为了解决哈希冲突而存在的。JDK1.8 以后当链表长度大于阈值（默认为 8）时，将链表转化为红黑树，以减少搜索时间。不过将链表转换成红黑树前如果当前数组的长度小于 64，会先扩容数组而不是转换为红黑树。</p>
+<h3 id="3-2-HashTable"><a href="#3-2-HashTable" class="headerlink" title="3.2 HashTable"></a>3.2 HashTable</h3><p>HashTable中的方法是线程安全的，不允许key为null。</p>
+<h3 id="3-3-TreeMap"><a href="#3-3-TreeMap" class="headerlink" title="3.3 TreeMap"></a>3.3 TreeMap</h3><p>基于红黑树对key进行排序。</p>
+<h2 id="4-算法"><a href="#4-算法" class="headerlink" title="4 算法"></a>4 算法</h2><p> Collections工具类提供了用于集合的一些基本算法</p>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Java数组</tag>
+        <tag>Java集合</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Maven</title>
+    <url>/%E6%8A%80%E6%9C%AF/Maven/</url>
+    <content><![CDATA[<p>maven-shade-plugin</p>
+<p>Selecting Contents for Uber JAR</p>
+<ol>
+<li>将该工程依赖的部分 Jar 包 include/exclude 掉。</li>
+<li>将依赖的某个 Jar 包内部的类或者资源 include/exclude 掉。</li>
+</ol>
+<p>Executable JAR<br>3. 通过设置 MainClass 创建一个可执行 Jar 包。</p>
+<p>Attaching the Shaded Artifact<br>4. 默认会生成一个Jar包和一个uber-jar包，可以通过配置来指定uber-jar的后缀名。</p>
+<p>Relocating Classes<br>5. 使用 maven shade plugin 解决 jar 或类的多版本冲突。 maven-shade-plugin 在打包时，可以将项目中依赖的 jar 包中的一些类文件打包到项目构建生成的 jar 包中，在打包的时候把类重命名</p>
+<p>Resource Transformers</p>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>maven</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Markdown</title>
+    <url>/%E6%8A%80%E6%9C%AF/Markdown/</url>
+    <content><![CDATA[<h2 id="Headers"><a href="#Headers" class="headerlink" title="Headers"></a>Headers</h2><figure class="highlight text"><table><tr><td class="code"><pre><span class="line"># This is an &lt;h1&gt; tag</span><br><span class="line">## This is an &lt;h2&gt; tag</span><br><span class="line">###### This is an &lt;h6&gt; tag</span><br></pre></td></tr></table></figure>
+
+<h1 id="This-is-an-tag"><a href="#This-is-an-tag" class="headerlink" title="This is an  tag"></a>This is an <h1> tag</h1><h2 id="This-is-an-tag-1"><a href="#This-is-an-tag-1" class="headerlink" title="This is an  tag"></a>This is an <h2> tag</h2><h6 id="This-is-an-tag-2"><a href="#This-is-an-tag-2" class="headerlink" title="This is an  tag"></a>This is an <h6> tag</h6><h2 id="Emphasis"><a href="#Emphasis" class="headerlink" title="Emphasis"></a>Emphasis</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">*This text will be italic*</span><br><span class="line">_This will also be italic_</span><br><span class="line"></span><br><span class="line">**This text will be bold**</span><br><span class="line">__This will also be bold__</span><br></pre></td></tr></table></figure>
+
+<p><em>This text will be italic</em><br><em>This will also be italic</em></p>
+<p><strong>This text will be bold</strong><br><strong>This will also be bold</strong></p>
+<h2 id="Lists"><a href="#Lists" class="headerlink" title="Lists"></a>Lists</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">* Item 1</span><br><span class="line">* Item 2</span><br><span class="line">  * Item 2a</span><br><span class="line">  * Item 2b</span><br><span class="line">1. Item 1</span><br><span class="line">1. Item 2</span><br><span class="line">1. Item 3</span><br><span class="line">   1. Item 3a</span><br><span class="line">   1. Item 3b</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Item 1</li>
+<li>Item 2<ul>
+<li>Item 2a</li>
+<li>Item 2b</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li>Item 1</li>
+<li>Item 2</li>
+<li>Item 3<ol>
+<li>Item 3a</li>
+<li>Item 3b</li>
+</ol>
+</li>
+</ol>
+<h2 id="Images"><a href="#Images" class="headerlink" title="Images"></a>Images</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">![Image of xxx](https:&#x2F;&#x2F;octodex.github.com&#x2F;images&#x2F;yaktocat.png)</span><br></pre></td></tr></table></figure>
+<p><img src="https://octodex.github.com/images/yaktocat.png" alt="Image of xxx"></p>
+<h2 id="Links"><a href="#Links" class="headerlink" title="Links"></a>Links</h2><p><code>http://github.com</code> or <code>[GitHub](http://github.com)</code></p>
+<p><a href="http://github.com/">http://github.com</a></p>
+<p><a href="http://github.com/">GitHub</a></p>
+<h2 id="Blockquotes-引用"><a href="#Blockquotes-引用" class="headerlink" title="Blockquotes 引用"></a>Blockquotes 引用</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">As Kanye West said:</span><br><span class="line">&gt; We&#39;re living the future so</span><br><span class="line">&gt; the present is our past.</span><br></pre></td></tr></table></figure>
+<p>As Kanye West said:</p>
+<blockquote>
+<p>We’re living the future so<br>the present is our past.</p>
+</blockquote>
+<h2 id="Inline-code"><a href="#Inline-code" class="headerlink" title="Inline code"></a>Inline code</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">I think you should use an</span><br><span class="line">&#96;&lt;addr&gt;&#96; element here instead.</span><br></pre></td></tr></table></figure>
+
+<p>I think you should use an<br><code>&lt;addr&gt;</code> element here instead.</p>
+<h2 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h2><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">1. Indentation:</span><br><span class="line">    if (isAwesome)&#123;</span><br><span class="line">      return true</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">2. Code fencing, 可以加很多`，最外面的`比里面的多，里面的`就可以被当成普通字符:</span><br><span class="line">```</span><br><span class="line">if (isAwesome)&#123;</span><br><span class="line">  return true</span><br><span class="line">&#125;</span><br><span class="line">```</span><br><span class="line"></span><br><span class="line">3. And if you&#x27;d like to use syntax highlighting, include the language:</span><br><span class="line">```javascript</span><br><span class="line">if (isAwesome)&#123;</span><br><span class="line">  return true</span><br><span class="line">&#125;</span><br><span class="line">```</span><br></pre></td></tr></table></figure>
+
+<h2 id="Tables"><a href="#Tables" class="headerlink" title="Tables"></a>Tables</h2><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">First Header | Second Header</span><br><span class="line">------------ | -------------</span><br><span class="line">Content from cell 1 | Content from cell 2</span><br><span class="line">Content in the first column | Content in the second column</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>First Header</th>
+<th>Second Header</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Content from cell 1</td>
+<td>Content from cell 2</td>
+</tr>
+<tr>
+<td>Content in the first column</td>
+<td>Content in the second column</td>
+</tr>
+</tbody></table>
+<h2 id="Blank-lines"><a href="#Blank-lines" class="headerlink" title="Blank lines"></a>Blank lines</h2><p><code>&lt;br/&gt;</code></p>
+<br/>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://guides.github.com/features/mastering-markdown/">https://guides.github.com/features/mastering-markdown/</a></p>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java基础-数据类型</title>
+    <url>/%E6%8A%80%E6%9C%AF/Java%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><ol>
+<li><p>没有后缀F的浮点数值（如3.14）总是默认为double类型。</p>
+</li>
+<li><p>浮点数不适用于无法接受舍入误差的计算，如金融计算，<code>System.out.println(2.0-1.0)</code>将打印出0.89999999，因为二进制系统无法精确表示1/10，就像十进制系统无法精确表示1/3。如果不允许舍入误差，应使用BigDecimal类。BigDecimal实现任意精度的浮点数运算，BigInteger实现任意精度的整数运算。</p>
+</li>
+<li><p>Unicode转义序列会在解析代码前得到处理。要小心注释中的\u，例如：<code>// \u000A is a new line</code>这个注释会报错，因为\u000A是换行符；<code>// look inside c:\users</code>这个注释也会报错，因为\u后没有跟4个16进制数</p>
+</li>
+<li><p>整型值和布尔值不能相互转换</p>
+</li>
+<li><p>&lt;&lt;左移，&gt;&gt;带符号位右移，&gt;&gt;&gt;无符号右移</p>
+</li>
+<li><p>String用于字符串操作，属于不可变类。String对象一旦被创建，其值将不能被改变。而StringBuffer、StringBuilder采用无final修饰的字符数组进行保存，是可变类。当对象创建后，仍然可以对其值进行修改。StringBuilder线程不安全，StringBuffer可理解为实现线程安全的StringBuilder。StringBuffer、StringBuilder的API是一样的，都是为了拼接字符串时提高效率，避免每次拼接时都创建一个String对象，用法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">StringBuilder builder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line"><span class="comment">// 当每次需要添加一部分内容时，就调用append方法</span></span><br><span class="line">builder.append(<span class="string">&quot;xxx&quot;</span>)</span><br><span class="line">...</span><br><span class="line"><span class="comment">// 字符串构建完成后调用toString()</span></span><br><span class="line">String s = builder.toString();</span><br></pre></td></tr></table></figure></li>
+<li><p>和C++不同，Java没有提供运算符重载功能</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Import data into MongoDB</title>
+    <url>/%E6%8A%80%E6%9C%AF/MongoDB/</url>
+    <content><![CDATA[<h2 id="Script"><a href="#Script" class="headerlink" title="Script"></a>Script</h2><p>The script of importing data into your MongoDB goes like this:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mongoimport -u user_name -p password --authenticationDatabase &quot;admin&quot; \</span><br><span class="line">--db database_name --collection collection_name \</span><br><span class="line">--mode&#x3D;upsert --file your_data.json --jsonArray</span><br></pre></td></tr></table></figure>
+
+<p>By having the script is not enough, we have to clarify some details.</p>
+<h2 id="Import-mode"><a href="#Import-mode" class="headerlink" title="Import mode"></a>Import mode</h2><p>There are four import modes: insert, upsert, merge, delete.</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>insert</td>
+<td>Insert the documents in the import file. mongoimport will log an error if you attempt to import a document that contains a duplicate value for a field with a unique index, such as _id.</td>
+</tr>
+<tr>
+<td>upsert</td>
+<td>Replace existing documents in the database with matching documents from the import file. mongoimport will insert all other documents. Replace Matching Documents during Import describes how to use –mode upsert.</td>
+</tr>
+<tr>
+<td>merge</td>
+<td>Merge existing documents that match a document in the import file with the new document. mongoimport will insert all other documents. Merge Matching Documents during Import describes how to use –mode merge.</td>
+</tr>
+<tr>
+<td>delete</td>
+<td>Delete existing documents in the database that match a document in the import file. mongoimport takes no action on non-matching documents. Delete Matching Documents describes how to use –mode delete.</td>
+</tr>
+</tbody></table>
+<h2 id="Import-data-format"><a href="#Import-data-format" class="headerlink" title="Import data format"></a>Import data format</h2><p>MongoDB adopts BSON format to store information, which is a binary serialization format used to store documents and make remote procedure calls. Comparatively, JSON format can only directly represent a subset of the types supported by BSON. The difference between these two formats can lead to information loss when you try to import JSON files into MongoDB.</p>
+<p>In our script, although the suffix of the import data file is “.json”, it can actually convey more information than traditional JSON files. The format of the file is called MongoDB Extended JSON (v2). This format, support data types like ObjectID, Double, Date, etc., which are defined in BSON.</p>
+<p>For example, by replacing <code>&quot;_id&quot; : &quot;5fd0d1679ba690d827a2b0ac</code> with <code>&quot;_id&quot; : &#123;&quot;$oid&quot; : &quot;5fd0d1679ba690d827a2b0ac&quot;&#125;</code>, MongoDB will automatically cast _id to ObjectId type, so there will be no information loss. Refer to <a href="https://docs.mongodb.com/manual/reference/mongodb-extended-json/">this</a> for more details and examples.</p>
+<p>See a data file example named as “topUpInfo.json”:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">[</span><br><span class="line">&#123;</span><br><span class="line">    &quot;_id&quot; : &#123;&quot;$oid&quot; : &quot;5fd0d1679ba690d827a2b0ac&quot;&#125;,</span><br><span class="line">    &quot;topUpOrderId&quot; : &#123;&quot;$numberLong&quot; :&quot;124450287526477824&quot;&#125;,</span><br><span class="line">    &quot;topUpOrderInfo&quot; : &#123;</span><br><span class="line">        &quot;transactionId&quot; : &quot;PI5E3BD47341D3130001D0186B&quot;,</span><br><span class="line">        &quot;userId&quot; : &quot;U5DD4DE90F585FF00017E3F30&quot;,</span><br><span class="line">        &quot;amount&quot; : &#123;&quot;$numberDecimal&quot; : &quot;40.00&quot;&#125;,</span><br><span class="line">        &quot;transferTime&quot; : &#123;&quot;$date&quot; : &quot;2020-02-10T03:28:52.158Z&quot;&#125;,</span><br><span class="line">        &quot;createTime&quot; : &#123;&quot;$date&quot; : &quot;2020-02-10T03:28:52.158Z&quot;&#125;,</span><br><span class="line">        &quot;updateTime&quot; : &#123;&quot;$date&quot; : &quot;2020-02-10T03:28:52.158Z&quot;&#125;,</span><br><span class="line">        &quot;type&quot; : 3</span><br><span class="line">    &#125;</span><br><span class="line">&#125;,&#123;</span><br><span class="line">    &quot;_id&quot; : &#123;&quot;$oid&quot; : &quot;5fd0d1689ba690d827a2b0ca&quot;&#125;,</span><br><span class="line">    &quot;topUpOrderId&quot; : &#123;&quot;$numberLong&quot; :&quot;124450287543255040&quot;&#125;,</span><br><span class="line">    &quot;topUpOrderInfo&quot; : &#123;</span><br><span class="line">        &quot;transactionId&quot; : &quot;PI5E3BDEA041D3130001D01887&quot;,</span><br><span class="line">        &quot;userId&quot; : &quot;U5DD4DE90F585FF00017E3F30&quot;,</span><br><span class="line">        &quot;amount&quot; : &#123;&quot;$numberDecimal&quot; : &quot;80.00&quot;&#125;,</span><br><span class="line">        &quot;transferTime&quot; : &#123;&quot;$date&quot; : &quot;2020-02-10T03:22:55.240Z&quot;&#125;,</span><br><span class="line">        &quot;createTime&quot; : &#123;&quot;$date&quot; : &quot;2020-02-10T03:22:55.240Z&quot;&#125;,</span><br><span class="line">        &quot;updateTime&quot; : &#123;&quot;$date&quot; : &quot;2020-02-10T03:22:55.240Z&quot;&#125;,</span><br><span class="line">        &quot;type&quot; : 3</span><br><span class="line">    &#125;</span><br><span class="line">&#125;]</span><br></pre></td></tr></table></figure>
+
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ol>
+<li><a href="https://docs.mongodb.com/database-tools/mongoimport/">mongoimport</a></li>
+<li><a href="https://docs.mongodb.com/manual/reference/mongodb-extended-json/">MongoDB Extended JSON (v2)</a></li>
+</ol>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>MongoDB</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Python</title>
+    <url>/uncategorized/Python/</url>
+    <content><![CDATA[<p>创建</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">python -m venv &lt;directory&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pip install -r requirements.txt [-i https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;simple]</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://mirrors.aliyun.com/pypi/simple/">https://mirrors.aliyun.com/pypi/simple/</a></p>
+<p><a href="https://pypi.mirrors.ustc.edu.cn/simple">https://pypi.mirrors.ustc.edu.cn/simple</a></p>
+<p><a href="https://pypi.douban.com/simple">https://pypi.douban.com/simple</a></p>
+<p>linux启用venv</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">source &lt;directory&gt;&#x2F;bin&#x2F;activate</span><br></pre></td></tr></table></figure>
+
+
+
+<p>如果需要安装pip</p>
+<figure class="highlight plain"><figcaption><span>https://pypi.tuna.tsinghua.edu.cn/simple</span></figcaption><table><tr><td class="code"><pre><span class="line">python -m ensurepip --upgrade</span><br></pre></td></tr></table></figure>
+
+<p>jupyterlab使用已创建的虚拟环境</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">进入虚拟环境xxx</span><br><span class="line">python -m ipykernel install --user --name&#x3D;xxx</span><br><span class="line">启动jupyterlab即可</span><br></pre></td></tr></table></figure>
+
+
+
+<p>当前目录下生成项目中使用到的包的requirements.txt</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">pipreqs ./ --encoding=utf8</span><br></pre></td></tr></table></figure>
+
+]]></content>
+  </entry>
+  <entry>
+    <title>Spring Boot Async Methods</title>
+    <url>/%E6%8A%80%E6%9C%AF/Spring-Boot-Async-Methods/</url>
+    <content><![CDATA[<h2 id="1-Challenge"><a href="#1-Challenge" class="headerlink" title="1 Challenge"></a>1 Challenge</h2><p>In dme-servering-atome-id, subscribe service will send lots of messages to the RabbitMQ every time it is called. This service will be unaccessible until all messages have been sent. The challenge here is how to return “ok” in the first hand, and do message processing, transmitting and exception handling in the background asynchronously. In this case, we choose to investigate asynchronous programming in Spring Boot.</p>
+<h2 id="2-Asynchronous-programming-in-Spring-Boot"><a href="#2-Asynchronous-programming-in-Spring-Boot" class="headerlink" title="2 Asynchronous programming in Spring Boot"></a>2 Asynchronous programming in Spring Boot</h2><p>There are 4 steps to do async programming in Spring Boot: 1) enable the asynchronous functionality; 2) create async methods; 3) configure the async executor; 4) handle exceptions.</p>
+<h3 id="2-1-Enable-the-asynchronous-functionality"><a href="#2-1-Enable-the-asynchronous-functionality" class="headerlink" title="2.1 Enable the asynchronous functionality"></a>2.1 Enable the asynchronous functionality</h3><p>@EnableAsync annotation helps to enable the asynchronous functionality. It switches on Spring’s ability to run asynchronous methods in a background thread pool.</p>
+<p>You may use @EnableAsync annotation over any of Spring Boot configuration class:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">@EnableAsync</span><br><span class="line">public class AnyConfigClass &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>or main class:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@SpringBootApplication</span><br><span class="line">@EnableAsync</span><br><span class="line">public class Application &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		SpringApplication.run(Application.class, args);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>One @EnableAsync is enough and both ways will work.</p>
+<h3 id="2-2-Create-async-methods"><a href="#2-2-Create-async-methods" class="headerlink" title="2.2 Create async methods"></a>2.2 Create async methods</h3><p>Use @Async annotation over a method to make it run on a separate thread. All internal methods will become async methods if @Async is used over a class. Note, however, that @Async is not supported on methods declared within a @Configuration class.</p>
+<p>The return type of an async method is constrained to either void or Future. With void return type, caller will get response immediately. Processing within the async method will then run in the background, and exceptions will be handled by getAsyncUncaughtExceptionHandler (refer to 2.3 and 2.4).</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Async</span><br><span class="line">public void yourAsyncMethod(...) &#123;</span><br><span class="line">  ...</span><br><span class="line">  doSomething();</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>If the return type is Future, you may declare the more specific CompletableFuture type:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Async</span><br><span class="line">public CompletableFuture&lt;YourResultClass&gt; yourAsyncMethod(...) &#123;</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">  YourResultClass yourResult &#x3D; ...</span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  return CompletableFuture.completedFuture(yourResult);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>or ListenableFuture type:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Async</span><br><span class="line">public ListenableFuture&lt;YourResultClass&gt; yourAsyncMethod(...) &#123;</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line">    YourResultClass yourResult &#x3D; ...</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    return new AsyncResult(yourResult);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>These two types allow for richer interaction with the asynchronous task and for immediate composition with further processing steps. Using Future or other return types will not be able to track the result of the asynchronous method execution.</p>
+<p>Java’s CompletableFuture is an evolution from the regular Future. It makes it easy to pipeline multiple asynchronous operations and merge them into a single asynchronous computation. Spring’s ListenableFuture extends Future with the capability to accept completion callbacks, but sometimes it will lead to the callback hell. Generally, CompletableFuture is recommended.</p>
+<h3 id="2-3-Configure-the-async-executor"><a href="#2-3-Configure-the-async-executor" class="headerlink" title="2.3 Configure the async executor"></a>2.3 Configure the async executor</h3><h4 id="2-3-1-Define-executors"><a href="#2-3-1-Define-executors" class="headerlink" title="2.3.1 Define executors"></a>2.3.1 Define executors</h4><p>After enabling the async functionality, we need to define an executor to pool threads. There are 3 ways:</p>
+<p>1) Implement the AsyncConfigurer with @Configuration</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Configuration</span><br><span class="line">@EnableAsync &#x2F;&#x2F;This annotation here is optional if you have used it elsewhere</span><br><span class="line">public class AppConfig implements AsyncConfigurer &#123;</span><br><span class="line"></span><br><span class="line">  @Override</span><br><span class="line">  public Executor getAsyncExecutor() &#123;</span><br><span class="line">    ThreadPoolTaskExecutor executor &#x3D; new ThreadPoolTaskExecutor();</span><br><span class="line">    executor.setCorePoolSize(7);</span><br><span class="line">    executor.setMaxPoolSize(42);</span><br><span class="line">    executor.setQueueCapacity(11);</span><br><span class="line">    executor.setThreadNamePrefix(&quot;MyExecutor::&quot;);</span><br><span class="line">    executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());</span><br><span class="line">    executor.initialize();</span><br><span class="line">    return executor;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  @Override</span><br><span class="line">  public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() &#123;</span><br><span class="line">    return new MyAsyncUncaughtExceptionHandler();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>By implementing AsyncConfigurer, you can customize properties of the executor, the uncaught exception handler or both of them. If you have async method with void return type, and you’d like to handle exceptions in your method, then it is necessary to adopt this way and override the getAsyncUncaughtExceptionHandler().</p>
+<p>2) Define an executor with the @Bean  annotation</p>
+<p>2.1) Define an executor bean named “taskExecutor”</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Bean</span><br><span class="line">public Executor taskExecutor()&#123;</span><br><span class="line">   ThreadPoolTaskExecutor executor &#x3D; new ThreadPoolTaskExecutor();</span><br><span class="line">   executor.setCorePoolSize(2);</span><br><span class="line">   executor.setMaxPoolSize(4);</span><br><span class="line">   executor.setQueueCapacity(20);</span><br><span class="line">   executor.setThreadNamePrefix(&quot;TaskExecutor::&quot;);</span><br><span class="line">   executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());</span><br><span class="line">   return executor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>This executor can be defined anywhere you like, and Spring will use this executor by default, even if there are other executer beans in the application. However, this bean won’t work if AsyncConfigurer has been implemented. Note, having multiple beans named “taskExecutor” is illegal.</p>
+<p>2.2) Define an executor bean with arbitrary name</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Bean</span><br><span class="line">public Executor yourUniqueExecutor()&#123;</span><br><span class="line">   ThreadPoolTaskExecutor executor &#x3D; new ThreadPoolTaskExecutor();</span><br><span class="line">   executor.setCorePoolSize(7);</span><br><span class="line">   executor.setMaxPoolSize(42);</span><br><span class="line">   executor.setQueueCapacity(11);</span><br><span class="line">   executor.setThreadNamePrefix(&quot;YourUniqueExecutor::&quot;);</span><br><span class="line">   executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());</span><br><span class="line">   return executor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>This executor can also be defined anywhere you like. If you only have one unique executor bean in the context, and AsyncConfigurer hasn’t been implemented, this executor will always be used by async methods even if it is not named “taskExecutor”. Spring will find this executor bean and use it automatically.</p>
+<p>If you’d like to use a specific executor for your async method, you can name a bean like:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Bean(name &#x3D; &quot;nameOfYourBean&quot;)</span><br></pre></td></tr></table></figure>
+<p>Then use this name in the @Async annotation over your async method:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">@Async(&quot;nameOfYourBean&quot;)</span><br></pre></td></tr></table></figure>
+<p>If you use a named bean for your async method with void return type, the method will still  adopt the getAsyncUncaughtExceptionHandler() you define in the configuration.</p>
+<p>3) Use the default executor</p>
+<p>If none of the above is resolvable, a SimpleAsyncTaskExecutor will be automatically used by Spring (if @EnableAsync is properly used) to process async method invocations.</p>
+<p>There can be multiple beans in the application, and Spring will follow the following sequence to find which executor to use for an async method: 1) If you have designate a named executor bean in @Async; 2) getAsyncExecutor() has been overridden in the AsyncConfigurer; 3) If taskExecutor exists; 4) If any other executor exist; 5) Use the SimpleAsyncTaskExecutor by default.</p>
+<h4 id="2-3-2-Executor-Configuration"><a href="#2-3-2-Executor-Configuration" class="headerlink" title="2.3.2 Executor Configuration"></a>2.3.2 Executor Configuration</h4><p>1) Common async TaskExecutor types</p>
+<ul>
+<li>SimpleAsyncTaskExecutor: This implementation does not reuse any threads. Rather, it starts up a new thread for each invocation.</li>
+<li>(Recommended) ThreadPoolTaskExecutor: It is a JavaBean that allows for configuring a ThreadPoolExecutor in bean style (through its “corePoolSize”, “maxPoolSize”, “keepAliveSeconds”, “queueCapacity” properties) and exposing it as a Spring TaskExecutor. This class is also well suited for management and monitoring (e.g. through JMX).</li>
+<li>ConcurrentTaskExecutor: There is rarely a need to use ConcurrentTaskExecutor directly. However, if the ThreadPoolTaskExecutor is not flexible enough for your needs, ConcurrentTaskExecutor is an alternative.</li>
+</ul>
+<p>2) ThreadPoolTaskExecutor settings</p>
+<ul>
+<li>CorePoolSize defines minimum parallel threads that can run at the same time.</li>
+<li>MaxPoolSize defines maximum parallel threads that can run at the same time when the queue is full.</li>
+<li>QueueCapacity defines the capacity of the queue. New tasks will be stored in the queue when core pool is filled.</li>
+<li>In Spring applications, when maximum pool and queue are full, threads will be rejected with ThreadPoolExecutor.AbortPolicy() by default, and you will lose new threads. For different purposes, the <strong>RejectedExecutionHandler</strong> can be customized with the following policies:</li>
+<li><ul>
+<li>(Recommended) ThreadPoolExecutor.AboutPolicy(): Rejecting the thread with throwing RejectedExecutionException. You will lose the thread.</li>
+</ul>
+</li>
+<li><ul>
+<li>ThreadPoolExecutor.CallerRunsPolicy(): The thread won’t be discard. This policy runs the rejected task in the calling thread of the execute method, unless the executor has been shut down, in which case the task is discarded.</li>
+</ul>
+</li>
+<li><ul>
+<li>ThreadPoolExecutor.DiscardPolicy(): The thread will be discard. You will lose the thread.</li>
+</ul>
+</li>
+<li><ul>
+<li>ThreadPoolExecutor.DiscardOldestPolicy(): This policy discards the oldest unhandled request. You will lose some threads inside the queue.</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-4-Handle-exceptions"><a href="#2-4-Handle-exceptions" class="headerlink" title="2.4 Handle exceptions"></a>2.4 Handle exceptions</h3><p>There are 4 kinds of common exceptions:</p>
+<p>1) Uncaught exceptions of async methods with void return type</p>
+<p>Async methods having a void return type cannot transmit any exception back to the caller. By default, such uncaught exceptions are only logged unless AsyncConfigurer is implemented and getAsyncUncaughtExceptionHandler() is overridden (refer to 2.3).</p>
+<p>2) Runtime exceptions of async methods with return values</p>
+<p>Just implement try{…}catch(…){…} in the async method will work.</p>
+<p>3) RejectedExecutionException caused by the AbortPolicy</p>
+<p>If AbortPolicy is set within the RejectedExecutionHandler like:</p>
+<p>executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());<br>At the same time if the queue and pool are all filled, new threads will be rejected, and RejectedExecutionException will be raised. This exception will be raised regardless of the return type of async methods.</p>
+<p>This exception can be caught by:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F;Async method with void return</span><br><span class="line">try &#123;</span><br><span class="line">  yourAsyncMethod(...);</span><br><span class="line">  return &quot;ok&quot;;</span><br><span class="line">&#125; catch (RejectedExecutionException e) &#123;</span><br><span class="line">  return &quot;Thread rejected, please try later.&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;Async method with return type</span><br><span class="line">try &#123;</span><br><span class="line">  return yourAsyncMethod(...);</span><br><span class="line">&#125; catch (RejectedExecutionException e) &#123;</span><br><span class="line">  log.warn(&quot;Thread rejected, please try later.&quot;);</span><br><span class="line">  return CompletableFuture.completedFuture(new YourResultClass());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>4) AsyncRequestTimeoutException</p>
+<p>This exception only happens to async method with return values. It indicates the longest time a calling thread can survive. When this exception happens, the calling thread will be shutdown, while the processing of the async method will still proceed. Finally, the async method will get the result but won’t be able to return it to the client.</p>
+<p>We can try to improve this situation by setting a proper async request-timeout (the unit is millisecond) in the xxx.yml file, define -1 if you need unlimited waiting time.</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">spring:</span><br><span class="line">  mvc:</span><br><span class="line">    async:</span><br><span class="line">      request-timeout: 15000</span><br></pre></td></tr></table></figure>
+
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ol>
+<li><a href="https://spring.io/guides/gs/async-method/">Spring Boot example: Creating Asynchronous Methods</a></li>
+<li><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/EnableAsync.html">Spring doc: @EnableAsync</a></li>
+<li><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/Async.html">Spring doc: @Async</a></li>
+<li><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/annotation/AsyncConfigurer.html">Spring doc: AsyncConfigurer</a></li>
+<li><a href="https://docs.spring.io/spring-framework/docs/current/reference/html/integration.html#scheduling-task-executor">Spring doc: TaskExecutor Types</a></li>
+<li><a href="https://juejin.cn/post/6844903959996416008">新手也能看懂的 SpringBoot 异步编程指南</a></li>
+<li><a href="https://www.baeldung.com/spring-async">How to do @Async in Spring</a></li>
+</ol>
+<p> </p>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>Spring Boot</tag>
+        <tag>Async</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo</title>
+    <url>/%E6%8A%80%E6%9C%AF/hexo/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>价值投资</title>
+    <url>/%E7%90%86%E8%B4%A2/%E4%BB%B7%E5%80%BC%E6%8A%95%E8%B5%84/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>理财</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>劳动法</title>
+    <url>/%E7%94%9F%E6%B4%BB/%E5%8A%B3%E5%8A%A8%E6%B3%95/</url>
+    <content><![CDATA[<h2 id="劳动关系"><a href="#劳动关系" class="headerlink" title="劳动关系"></a>劳动关系</h2><p>任何劳动争议的解决都以认定劳动关系为前提。认定劳动关系主要应当考虑两个标准：</p>
+<p>1）<strong>主体标准</strong>：必须一方是劳动者，一方是用人单位（不能是自然人）。劳动者应当符合年龄标准（达到最低就业年龄）和自由度标准（能自由支配自己的劳动能力）；用人单位需要具有用工资质。</p>
+<p>2）<strong>从属性标准</strong>：用人单位依法制定的各项劳动规章制度适用于劳动者，劳动者接受用人单位的劳动管理；劳动者从事用人单位安排的有报酬的劳动；劳动者提供的劳动是用人单位业务的组成部分。</p>
+<p>判定劳动关系的例子：</p>
+<p>1）收银员与超市：符合两个标准，有劳动关系；</p>
+<p>2）保姆与雇主：个人与个人，不符合主体标准，无劳动关系；</p>
+<p>3）保姆与中介公司：不具备从属性，无劳动关系；</p>
+<p>4）勤工俭学的在校大学生与餐馆：在校大学生不符合自由度标准，因为只能是业余时间支配劳动能力，不能建立劳动关系。但如果不是勤工俭学，而是在学生阶段就业、寒暑假打工则满足自由度标准，可以签订劳动合同并建立劳动关系。</p>
+<h2 id="劳动合同"><a href="#劳动合同" class="headerlink" title="劳动合同"></a>劳动合同</h2><h3 id="劳动合同的类型"><a href="#劳动合同的类型" class="headerlink" title="劳动合同的类型"></a>劳动合同的类型</h3><p>劳动合同的类型有三种：1）固定期限劳动合同；2）无固定期限劳动合同；3）以完成一定工作任务为期限的劳动合同。</p>
+<p>需要注意以下几点：</p>
+<p>1）对于无固定期限劳动合同，除了直接签订协议之外，劳动者在用人单位连续工作满十年，或连续订立两次固定期限劳动合同的，只要劳动者提出，用人单位即应与其订立无固定期限劳动合同。</p>
+<p>2）区分以完成一定工作任务为期限的劳动合同与其他民事合同，应以劳动关系认定的二要素为分析标准。另外，以完成一定工作任务为期限的劳动合同应明确具体的工作任务总量或者工作完成的标志。</p>
+<h3 id="劳动合同的签订"><a href="#劳动合同的签订" class="headerlink" title="劳动合同的签订"></a>劳动合同的签订</h3><p>签订劳动合同并不是建立劳动关系的必要条件。但是为了保护自己的合法权益，应当签署劳动合同。关于劳动合同的签订：</p>
+<p>1）已建立劳动关系，未同时订立书面劳动合同的，应当自用工之日起一个月内订立书面劳动合同。一个月内，经用人单位书面通知后，劳动者不与用人单位订立书面劳动合同的，用人单位应当书面通知劳动者终止劳动关系，无需向劳动者支付经济补偿，但应当依法向劳动者支付其实际工作时间的劳动报酬。</p>
+<p>2）用人单位自用工之日起超过一个月不满一年未与劳动者订立书面劳动合同的，应当向劳动者每月支付二倍的工资并补订书面劳动合同。但若劳动者不与用人单位订立书面劳动合同的，用人单位应当书面通知劳动者终止劳动关系，并依照劳动合同法第四十七条的规定支付经济补偿。</p>
+<p>3）用人单位自用工之日起满一年不与劳动者订立书面劳动合同的，视为用人单位与劳动者已订立无固定期限劳动合同，且应当向劳动者支付自用工之日起满一月的次日至满一年的前一日每月二倍的工资并补订书面劳动合同。</p>
+<h3 id="劳动合同的解除"><a href="#劳动合同的解除" class="headerlink" title="劳动合同的解除"></a>劳动合同的解除</h3><p><strong>劳动者自行解除：</strong></p>
+<p>1）劳动者需提前3天（试用期内）或30天（试用期外）通知辞职；</p>
+<p>2）用人单位存在过错情形的，根据程度不同，劳动者可以选择随时通知或无需通知用人单位辞职，并可要求经济补偿。</p>
+<p><strong>用人单位解除：</strong></p>
+<p>1）双方协商一致解除；</p>
+<p>2）试用期间被证明不符合录用条件；</p>
+<p>3）严重违反公司规章制度或违法；</p>
+<p>4）劳动者不能胜任工作，需用人单位提前30天书面通知并支付一个月工资；</p>
+<p>5）经济性裁员。</p>
+<p><strong>延伸：</strong></p>
+<p><strong>一个月迟到8次算严重违反规章吗？</strong></p>
+<p>如果公司载明3次以上算严重违反，且制定规章过程合法并已公示告知，则算严重违反；若公司并未规定几次算严重，则按占一月工作时间的比例来判断；若公司未规定迟到的后果，则不可以上升为严重违反。判定劳动者严重违反后，公司可解除劳动合同并无需支付赔偿金。</p>
+<p><strong>公司违法解雇怎么办？</strong></p>
+<p>劳动者可要求继续履行劳动合同或要求单位支付赔偿金，赔偿金为标准经济补偿的两倍，不过对于高薪人员的赔偿金可能会有限高。要了赔偿金就不能再要经济补偿了。</p>
+<p><strong>末位淘汰合法吗？</strong></p>
+<p>合法的末位淘汰需要公司提供劳动者“不能胜任工作”的证据，即胜任工作的标准、劳动者经过培训或调岗仍不能胜任工作。如果没有达到不能胜任的标准，则末位淘汰不合法，劳动者可要求继续履行劳动合同或要求单位支付赔偿金。</p>
+<h3 id="劳动合同的常见问题"><a href="#劳动合同的常见问题" class="headerlink" title="劳动合同的常见问题"></a>劳动合同的常见问题</h3><p><strong>1）缺失必备条款的劳动合同有效吗？</strong></p>
+<p>劳动合同法第十七条明确了劳动合同中的必备条款。但如果必备条款有缺失，只要能够确认合同双方当事人的身份，具备可履行性，就可认定双方已签订劳动合同，只是需要协商补充约定，并不能说劳动合同无效。</p>
+<p><strong>2）劳动合同什么时候无效？</strong></p>
+<p>劳动合同中违反法律（如通过胁迫、欺诈手段签订劳动合同）、行政法规效力性强制规定（如双方约定不办理社保）的部分无效（可以是全部无效），无效的部分自签订之日起就没有约束力。</p>
+<p><strong>3）劳动合同中的工作地点可以是全国吗？</strong></p>
+<p>劳动合同中的工作地点的约定应尽量明确。“工作地点范围为全国”，“工作地点以实际分配为准”这样的内容会被法院判定为使劳动者失去协商权利的条款，若公司以劳动者拒绝调动为由开除劳动者，打起官司来劳动者会占优。</p>
+<p><strong>4）试用期合同是劳动合同吗？</strong></p>
+<p>只约定试用期的试用期合同本质上就是劳动合同，试用期的期限就是劳动合同期限。</p>
+<p><strong>5）竞业限制协议合法吗？</strong></p>
+<p>合法，劳资双方可以签订竞业限制协议。签订竞业限制协议后，用人单位需要按约定给予经济补偿，劳动者则不可以去竞争对手公司就职。劳动者若违反协议需要支付违约金；用人单位若没有及时支付经济补偿，三个月之后（或根据具体地方法规）劳动者可以通知用人单位解除竞业协议，并要求支付已履行期间的经济补偿，但如果劳动者不通知，则竞业限制协议仍然成立。</p>
+<p><strong>6）用人单位法人变更需要重新签劳动合同吗？</strong></p>
+<p>不需要。用人单位变更名称、法定代表人、主要负责人或者投资人等事项，不影响劳动合同的履行。用人单位发生合并或者分立等情况，原劳动合同继续有效，劳动合同由承继其权利和义务的用人单位继续履行。</p>
+<p><strong>7）之前提到的经济补偿到底有多少？</strong></p>
+<p>《劳动合同法》第四十七条和《劳动合同法实施条例》第二十七条有说明，即：按劳动者在本单位的工作年限，每满一年支付一个月工资（劳动合同解除或终止前十二个月的平均工资，包含所有奖金补贴，不满十二个月按实际月数计算）。六个月以上不满一年按一年算，六个月以下按半个月算。</p>
+<h2 id="劳动基准"><a href="#劳动基准" class="headerlink" title="劳动基准"></a>劳动基准</h2><p>劳动基准，即法定最低劳动标准，是指劳动者在劳动关系中所得劳动条件的最低法定标准，包括工资、工时、休息休假、劳动安全卫生、女职工和未成年工特殊保护等多方面。</p>
+<h3 id="工作时间"><a href="#工作时间" class="headerlink" title="工作时间"></a>工作时间</h3><p>标准工时制的三项基准：1）劳动者每日工作时间不超过8小时；2）每周工作时间不超过40小时；3）每周至少休息1日。</p>
+<p>啥是加班？根据《劳动法》第四十一条：用人单位由于生产经营需要，经与工会和劳动者协商后可以延长工作时间，一般每日不得超过一小时；因特殊原因需要延长工作时间的，在保障劳动者身体健康的条件下延长工作时间每日不得超过三小时，但是每月不得超过三十六小时。休息日和法定休假日工作也是加班。</p>
+<p>加班费能拿多少？延长工作时间至少拿1.5倍，休息日至少2倍，法定休假日至少3倍。加班费属于额外补偿，所以如果法定假日加班（带薪假），工资照拿，3倍的加班费另算！另外合同里面即使写明劳动者是自愿加班也是无效的，仍然应按照劳动法的规定给加班费。但是，要证明自己属于加班很复杂，得满足几个构成要件：</p>
+<p><strong>劳动者</strong></p>
+<p>1）劳动者是否存在标准工作时间以外或公休日、法定节假日提供劳动的事实</p>
+<p>2）劳动者超时劳动的行为是否经过用人单位的批准或事后得到用人单位的确认，不一定书面，任何能证明的形式都行</p>
+<p>3）劳动者加班行为是否必要，是否属于用人单位的生产经营的需要</p>
+<p><strong>工作内容</strong></p>
+<p>4）工作内容是劳动者的本职工作或是本职工作以外的临时被安排的任务</p>
+<p><strong>用人单位</strong></p>
+<p>5）用人单位和劳动者之间关于加班工资是否已存在明确的约定，有的话最好</p>
+<p>6）用人单位就特定岗位是否已经向劳动行政部门申请不定时工作制，申请通过了劳动者就不能拿加班费了</p>
+<p>7）用人单位是否已经安排调休，调休的安排是否合法，调休的几天不能拿加班费</p>
+<h3 id="工资制度"><a href="#工资制度" class="headerlink" title="工资制度"></a>工资制度</h3><p>用人单位支付的工资在正常情况下不得低于当地的最低工资标准，除非用人单位停产。停产期间，用人单位仍需续付工资，但可按低保标准计算。若用人单位关闭，劳动关系解除，就没有任何工资了。</p>
+<h3 id="劳动保护"><a href="#劳动保护" class="headerlink" title="劳动保护"></a>劳动保护</h3><p>女职工依法享有生育假期，用人单位不得在产假期间解除与女职工的劳动关系。</p>
+<h2 id="劳动争议处理"><a href="#劳动争议处理" class="headerlink" title="劳动争议处理"></a>劳动争议处理</h2><h3 id="基本程序"><a href="#基本程序" class="headerlink" title="基本程序"></a>基本程序</h3><p>1）协商；2）调解；3）仲裁；4）诉讼。</p>
+<p>处理劳动争议，第一步一般是双方进行协商，协商不成，可以向调解组织（企业内设的、基层人民调解委员会、乡镇街道等设立的相应调解组织）申请调解。</p>
+<p>调解如果成功，将会产生调解协议。注意调解协议首先应遵循合法原则，若调解结果不符合法律的强制性规定，如双方协商后一致同意无需给劳动者缴纳社保，则协议无效，调解组织也不应认可。其次，调解还不应违反自愿原则，不可强迫。最后，调解不应损害他人利益。假如劳动者索要加班费，达成的调解协议是通过引导顾客多消费来进行提成，这样也是无效的调解协议。有效的调解协议是具有法律效应的，双方都应当履行。若一方不履行，则当事人可申请进行仲裁。因支付拖欠劳动报酬、工伤医疗费、经济补偿或者赔偿金事项达成调解协议，用人单位在协议约定期限内不履行的，劳动者可以持调解协议书依法向法院申请支付令。另外，双方当事人可以自调解协议生效之日起十五日内向仲裁委员会申请仲裁审查，或向人民法院申请司法确认，来强化调解协议的效力。</p>
+<p>调解如果不成功，应向劳动争议仲裁委员会申请仲裁。仲裁时效一般只有一年（自权利人知道或应当知道其权利被侵害之日起算），超过时效法院也会以仲裁时效已过为由驳回诉讼请求。所以仲裁要趁早。仲裁有时候是“终局裁决”，这个终局裁决限制了用人单位提起诉讼的权利，用人单位只能在裁决适用的法律有错误等少数情况下申请中级人民法院撤销裁决。而劳动者对裁决不服，可以自收到仲裁裁决书之日起十五日内向人民法院提起诉讼，而且如果提起了诉讼，用人单位的撤销裁决申请法院就不受理了。那么啥时候是终局裁决呢？《劳动争议调解仲裁法》第四十七条规定：追索劳动报酬、工伤医疗费、经济补偿或者赔偿金，不超过当地月最低工资标准十二个月金额的争议；因执行国家的劳动标准在工作时间、休息休假、社会保险等方面发生的争议，仲裁裁决为终局裁决，裁决书自作出之日起发生法律效力。关于不超过当地月最低工资标准十二个月金额，可以申请多种补偿，每一种都不超过规定就可以。最后，如果同一仲裁裁决包含终局裁决和非终局裁决，应按照非终局裁决处理，就是企业上诉就不受限了。</p>
+<h3 id="管辖单位"><a href="#管辖单位" class="headerlink" title="管辖单位"></a>管辖单位</h3><p>劳动争议案件由用人单位所在地或劳动合同履行地的仲裁委员会和基层人民法院管辖，如果两地都明确且不在一个地方，可以向任意一地的仲裁委员会申请仲裁或向人民法院提起诉讼。劳动合同履行地不明时，以用人单位所在地为准。</p>
+<p>如果双方分别向两地的仲裁委员会提出仲裁，应由劳动合同履行地的仲裁委员会管辖。有多个合同履行地的，以最先受理的仲裁委员会管辖。</p>
+<p>如果双方分别向两地的人民法院提起诉讼，由先立案的法院管辖。如果法院之间有管辖权争议且无法调解，得上报上级法院指定管辖权。</p>
+<h3 id="举证责任"><a href="#举证责任" class="headerlink" title="举证责任"></a>举证责任</h3><p>一般来说，当事人对其提出的主张有责任提供证据，即“谁主张，谁举证”。当有关证据属于用人单位掌握管理时，用人单位应当提供，否则将承担不利后果。</p>
+<p>因用人单位作出开除、辞退、解除劳动合同、减少劳动报酬、计算劳动者工作年限等决定而发生劳动争议的，由用人单位负举证责任。</p>
+<p>劳动者主张加班费的，应当要么证明加班事实存在，要么证明用人单位掌握加班事实存在的证据并要求用人单位提供这些证据。</p>
+<p>在无法确定举证责任的情况下，由仲裁庭或法院酌情确定。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>劳动与社会保障法：原理及案例（中国大学MOOC）</p>
+<p>劳动合同法</p>
+<p>劳动合同法实施条例</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>劳动法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基金</title>
+    <url>/%E7%90%86%E8%B4%A2/%E5%9F%BA%E9%87%91/</url>
+    <content><![CDATA[<p>QDII（国内机构投资者赴海外投资资格认定制度QUALIFIED DOMESTIC INSTITUTIONAL INVESTORS）基金是指在一国境内设立，经该国有关部门批准从事境外证券市场的股票、债券等有价证券业务的证券投资基金。</p>
+<p>房地产投资信托（外语词全称Real Estate Investment Trust，外语词缩略语REIT）最早的定义为“有多个受托人作为管理者，并持有可转换的收益股份所组成的非公司组织”。由此将REITs明确界定为专门持有房地产、抵押贷款相关的资产或同时持有两种资产的封闭型投资基金。</p>
+]]></content>
+      <categories>
+        <category>理财</category>
+      </categories>
+      <tags>
+        <tag>基金</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>RabbitMQ</title>
+    <url>/%E6%8A%80%E6%9C%AF/RabbitMQ/</url>
+    <content><![CDATA[<p>docker run -it –rm –name rabbitmq -p 5672:5672 rabbitmq:3.7.7</p>
+<p>if you are running short-term foreground processes, these container file systems can really pile up. If instead you’d like Docker to automatically clean up the container and remove the file system when the container exits, you can add the –rm flag. volumes that are specified without a name are removed too.</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://www.rabbitmq.com/getstarted.html">https://www.rabbitmq.com/getstarted.html</a></p>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>RabbitMQ</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/uncategorized/%E5%BA%94%E5%AF%B9/</url>
+    <content><![CDATA[<p>20世纪80年代的改革开放主要实行的是“请进来”的政策，外国资本进入中国助力中国经济发展。加入WTO之后，中国开始了“走出去”政策，物美价廉的商品占据了世界市场越来越多的份额。“请进来”的时候中国在经济上和西方没有实质性的冲突，而“走出去”则触动了西方的利益，西方也开始视中国为威胁，并攻击中国没有遵守西方确立的方方面面的规则。这些攻击是对规则的运用，中国也需要学着用规则反制并避免商业事件过度政治化。例子：《阻断外国法律与措施不当域外适用办法》。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">实际的冲突事件？制造业、华为、字节。</span><br></pre></td></tr></table></figure>
+
+<p>因此可以说，对规则制定权的竞争是今天国际竞争的核心，更是未来中美竞争的核心。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">规则是什么？现在有哪些规则？未来可以制定哪些规则？制定规则会有哪些好处？美欧过去是如何制定规则的，又是如何从中获利的？</span><br><span class="line">欧盟、北美自贸区、RCEP</span><br></pre></td></tr></table></figure>
+
+<p>中国可以怎么做？</p>
+<p>1）政府应统一国内市场标准以减少内耗：京津冀、长三角、珠三角这些经济发达区域对外商的营商规则优惠大不相同，甚至不同城市不同工业园区的政策都不同。这样的恶果就是，地方会为了吸引外资而提出不适合当地经济情况的优惠条件，外资可能会进行政策套利</p>
+<p>2）各行业应构建非政府主导规则：BRC, ASTM, IEEE</p>
+<p>3）对现有国际规则进行再梳理，之后影响、改革乃至创设国际规则。</p>
+<p>4）实现国家治理体系和治理能力现代化：比如如何管理国内外互联网？一刀切还是提升治理能力？怎么在不影响政治经济和社会稳定的前提下进行有效管理？</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">高科技、互联网企业，中国管不住或管不好？谷歌、脸书的退出，墙的建立</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>市场是做大饼的，政府是分大饼的，需要两条腿走路。</p>
+<p>内循环要壮大中等收入群体，避免落入中等收入陷阱。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">中等收入陷阱：二战后许多发展中国家在经济起飞达到中等收入后，缺乏增长动力，既无法在工资方面与低收入国家竞争，又无法在尖端技术方面与富裕国家竞争，最终出现经济停滞的状态。</span><br><span class="line">修昔底德陷阱：新兴大国挑战现有的老牌大国会不可避免地引起混乱</span><br><span class="line">民粹主义：</span><br><span class="line">各种社会都会表现出一定的阶级对抗性，当民众普遍感受到自身的需要受到威胁或冲击时，“人民大众”与“统治精英”之间就会产生冲突。此时民众会倾向于强调“人民至上”，极端推崇人民群众的价值和理想，把“人民”作为所有政治运动和政治制度合法性的最终来源，敌视精英主义，否定政治精英在社会历史发展中的重要作用。这种现象或思潮一般称为民粹主义（Populism）。但是现实中统治者会通过强调诸如平民的统一、全民公决、人民的创制权等民粹主义价值，对平民大众从整体上实施有效的控制和操纵，导致民粹主义常常堕变成政治领袖出于政治控制的需要而对人民大众进行蛊惑人心的宣传鼓动。</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>美国一直说中国人偷走了他们的工作，这当然不是中国的责任，因为生产资源在全球范围通过市场分配。</p>
+<p>社会抗议、反叛，可以说是美国制度的一部分，他的容积足够大，可以容纳这些矛盾。20世纪60年代的反越战和黑人民权运动可比最近的危机大多了。所以，不要错判美国，他在制造业、经济、军事等领域依然是全球领先的。大国的衰落是一个长期的过程（参考达利欧）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">美国社会的抗议和反叛</span><br></pre></td></tr></table></figure>
+
+<h3 id="美国对中国的“四全四分”政策："><a href="#美国对中国的“四全四分”政策：" class="headerlink" title="美国对中国的“四全四分”政策："></a>美国对中国的“四全四分”政策：</h3><p>全面对抗：</p>
+<p>全政府：美国以前的对华政策由国务院、军方、商务部这些部门执行，但是美国现在觉得这些政府部门不够了，要所有的政府机构协调起来对付中国。</p>
+<p>全社会：美国觉得光有政府不够，还要动用社会组织，尤其是国际NGO（非政府组织），因为美国拥有世界上最多的国际NGO。</p>
+<p>全世界：美国觉得他一个国家对付中国不够，要团结全世界的力量。美国一方面在“退群”，一方面又在重新“组群”。他从有中国的组织中退出来，重新组建没有中国的群来对付中国。</p>
+<p>全方位：中美贸易战、科技冷战、意识形态和政治认同、台湾新疆西藏南海问题等全方位对付中国。</p>
+<p>内部分化：</p>
+<p>分化中国共产党与中国人民</p>
+<p>分化中国共产党与中国领导集体</p>
+<p>分化汉民族与少数民族</p>
+<p>分化“中”与“华”，想要以主要受西方教育的港台甚至新加坡和海外华人对抗中国，以华制中</p>
+<p>南斯拉夫问题上，民主党的克林顿提出“人权高于主权“。</p>
+<h3 id="世界如何发展？"><a href="#世界如何发展？" class="headerlink" title="世界如何发展？"></a>世界如何发展？</h3><p>外部：中美技术竞争-逆全球化（技术脱钩，产业链、资产撤出中国，尤其是高科技和医疗产业）-军事竞赛-技术创新</p>
+<p>内部：中国发展医疗教育住房等软基建-壮大中产-生产力发展、技术创新、文化创新</p>
+<p>每天吹牛拍马、唱赞歌的，被上级领导注意到，被提拔了；不作为也不干活的，不犯错误，也有机会被提拔；那些想作为的却遇到重重困难，一旦做点事情，就容易触动到其他人的利益。就人性来说，不管什么样的体制甚或企业，总会出现这三类群体。所以感觉地方政府“不负责任”的时候，不能光指着某个领导说：你不负责。事实上往往是因为制度缺陷的存在才给人这种政府“不负责任”、“不作为”的感觉。为安民心，目前可能会找替罪羊，需要有人背锅。但是根本上来说，一方面需要有一群想作为的人来推动事情的解决甚至制度的改善；另一方面也需要让责任与利益正相关，有多少利益就有多少责任，要担多大的责就要给人多大的利益回报，让人承担责任却没有利益是违背人性的。</p>
+<h3 id="大周期"><a href="#大周期" class="headerlink" title="大周期"></a>大周期</h3><p>自古至今，在大多数国家，对大多数人最主要的影响因素是，人们如何努力创造、获取、分配财富和权力，尽管同时也存在着意识形态、宗教等争斗。</p>
+<p>人类为了创造和获取而发展生产力，也让世界总体的财富、权力和生活水平稳步提高。财富的拥有者为了维持和增加财富，会与政权掌控者合作，建立共生关系，制定和执行规则。随着这一运作机制的逐渐演变，很小部分的人获得并控制了大部分财富和权力，导致财富的分配出现问题，进而引发一系列问题而导致冲突。冲突后，新的秩序建立，新的周期重新开启。人类就是沿着这样的周期不断螺旋上升着发展。</p>
+<p>简单来说，一个周期可以分为三个阶段，每个阶段都有相应的特征：</p>
+<ul>
+<li><p>上升阶段</p>
+<p>1）强有力的领导者</p>
+<p>2）创造力</p>
+<p>3）教育</p>
+<p>4）良好的文化</p>
+<p>5）良好的资源分配</p>
+<p>6）强大的竞争力</p>
+<p>7）强劲的收入增长</p>
+<p>8）强大的市场和金融中心</p>
+</li>
+<li><p>顶部阶段</p>
+<p>1）缺乏效率</p>
+<p>2）过度扩张</p>
+<p>3）失去竞争力</p>
+<p>4）贫富差距</p>
+</li>
+<li><p>下跌阶段</p>
+<p>1）巨额债务</p>
+<p>2）印发货币</p>
+<p>3）内部冲突</p>
+<p>4）失去储备货币地位</p>
+<p>5）能力较弱的领导者</p>
+<p>6）内战/革命</p>
+</li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>术</title>
+    <url>/%E5%B0%8F%E8%AF%B4/%E6%9C%AF/</url>
+    <content><![CDATA[<p>“杀了我，你就可以拥有我的所有能力了。”面前的人怪叫着，满眼都是泪水地叫着。酥酥疑惑地看着这个怪人，他浑身散发着金光，衣着华美，脸庞清秀，整个人悬浮在空中。“杀了我吧，你只需要杀了我，就可以拥有神力。”他又叫道。虽然酥酥头脑昏昏沉沉，也搞不清楚状况，但仿佛是受了诱惑一样，不受控制地举起了一把剑。“我啥时候有了一把剑啊，刚才还没有的呀？”酥酥一头雾水地举起剑像怪人走去，直到剑完全刺穿了他的心脏。怪人浑身颤动着，显得非常痛苦，但嘴角却扬了起来。“终于解脱了。”怪人舒了口气，四肢瘫软下来，随后化成了烟，消失了。酥酥杀了怪人，慢慢地醒来了。</p>
+<p>“原来是个梦，这个梦真奇怪啊。”酥酥想着，就想给男朋友打电话分享一下这个奇怪的故事。“要是他睡在我身边，我就可以把他打醒，强迫他听了。”酥酥坏笑着拨通了电话，下一秒，一个人啪地出现在了酥酥床上。酥酥吓了一跳，定睛一看，正是男朋友天皮。天皮人像傻了一样，嘴巴有五分钟没合拢过。酥酥也木了，半晌才说，“你啥时候来的，怎么一点声音也没有？”天皮结结巴巴地说：“我来？你在美国，我在中国，我咋知道突然跑你床上来了？”酥酥震惊了：“你不是为了给我惊喜？”天皮道：“靠，我上一秒还在打游戏，下一秒就眼前一白，掉到了你床上。”</p>
+<p>“杀了我，你就可以拥有我的所有能力了。”酥酥突然想起梦中的那个怪人。难不成，真的拥有了他的能力？他的能力就是瞬间移动物体？酥酥兴奋起来：“我要刘昊然！”可惜等了半天，啥昊然也没出现。天皮疑惑地问道：“你啥时候会法术了？”酥酥得意地说道：“因为我聪明！”天皮又问道：“那你刚才叫刘昊然干嘛，这是咒语吗？”酥酥嘴硬道：“我就随便叫叫而已，早上脑子还有点抽。”天皮说：“你这是可以瞬间移动物体的法术？那你还能移啥？”</p>
+<p>酥酥愣了两三秒，随即天花板上开始往下掉烤鸭，披萨，螃蟹这些东西。过了一会儿又掉下一个榴莲，差点砸到天皮身上。天皮踉跄地躲开，骂道：“你咋净想些这，差点把我砸死。”说着，抓住了一直烤鸭开始吃了起来，一边含混地说道：“老婆会法术就是好。”酥酥看天皮吃得开心还骂她，嗔怒地说：“打死你！”然后一刀砍来。“啊，你哪来的刀！”天皮吓傻了，酥酥也吓坏了。“看来你不能随便想东西，不然会有很不好的后果！”天皮说道，“我知道你想象力特别丰富，你可别乱想了！”酥酥尽力地开始控制自己，可是越控制，越乱想，她甚至想到了那个怪人，不过那些东西并没有出现。过了一会儿，床上只是多了一堆衣服和鞋子，并没有出现什么特别奇怪的东西。</p>
+<p>“我好像只能移动我特别熟悉的东西。”酥酥说道。天皮松了口气，色眯眯地看着酥酥：“我们特别熟吗？”说完，手开始不老实起来，酥酥一边嗔怒，一边想着一些奇奇怪怪的事情，于是天皮的作案工具突然变得十分巨大，天皮一时重心不稳，摔倒在了床上。“你这不是搬东西，感觉到像是心想事成吧。”天皮看着自己硕大的作案工具，激动多于惊吓。酥酥也想到了这一点，放声大笑：“那我以后，就是世界的主宰了！”说完，拍拍天皮地脑瓜说，我可以封你为后。天皮一咕噜爬起来拜谢道：“媳妇尽管为所欲为，臣必竭死力以尽忠。”酥酥又摸摸天皮的头，说道：“还敢叫我媳妇？以后只有我叫你媳妇，你以后就叫我主人吧。”天皮嬉笑着抬起头，“主人，那我要来服侍您啦！”说着，抬起了作案工具。没想到，酥酥突然抽动起来，然后瘫软在了床上。天皮关切的问道：“主人，您是怎么了？”酥酥苦笑道：“我想到我要高潮，就高潮了。”</p>
+]]></content>
+      <categories>
+        <category>小说</category>
+      </categories>
+      <tags>
+        <tag>酥酥</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>用闲置小米搭建个人服务器</title>
+    <url>/%E6%8A%80%E6%9C%AF/%E7%94%A8%E9%97%B2%E7%BD%AE%E5%B0%8F%E7%B1%B3%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
+    <content><![CDATA[<h2 id="小米刷机"><a href="#小米刷机" class="headerlink" title="小米刷机"></a>小米刷机</h2><p>网上很多刷机方法都要么过时了，要么要下乱七八糟的刷机软件。刷机其实很简单，只要两步：</p>
+<p>1）按照自己的安卓版本在<a href="https://xiaomirom.com/">小米ROM</a>下载适合的开发版MIUI</p>
+<p>2）<a href="http://zhushou.xiaomi.com/">官网</a>下载小米手机助手，按照提示解锁设备、进入FASTBOOT模式刷入下载的ROM</p>
+<h2 id="安装Linux"><a href="#安装Linux" class="headerlink" title="安装Linux"></a>安装Linux</h2><p>1）下载linux deploy</p>
+<p>2）为linux deploy开启root权限</p>
+<p>3）linux</p>
+<p>4）测试</p>
+<h2 id="Linux扩容"><a href="#Linux扩容" class="headerlink" title="Linux扩容"></a>Linux扩容</h2><ol>
+<li>linux deploy中按停止</li>
+<li>打开右上角菜单，点击导出</li>
+<li>去小米文件管理中删除linux.img</li>
+<li>回到linux deploy按右下角，更改“源地址”和“镜像大小”两个项目，分别填入${EXTERNAL_STORAGE}/linux-rootfs.tar.gz和新镜像的大小</li>
+</ol>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>社保那些事儿</title>
+    <url>/%E7%94%9F%E6%B4%BB/%E7%A4%BE%E4%BF%9D/</url>
+    <content><![CDATA[<h2 id="一、社保是什么"><a href="#一、社保是什么" class="headerlink" title="一、社保是什么"></a>一、社保是什么</h2><p>社保有两大系统：1. 有雇主的打工一族交的城镇职工社会保险，就是我们说的五险一金；2. 没工作的人交的城乡居民保险，简称城居保。</p>
+<p>五险一金包含：</p>
+<p>【养老保险】——退休后领养老金的</p>
+<p>【医疗保险】——看病报销的</p>
+<p>【生育保险】——生完孩子补贴的</p>
+<p>【工伤保险】——工作中受伤补偿的</p>
+<p>【失业保险】——失业了补助的</p>
+<p>【住房公积金】 —— 贷款买房准备金</p>
+<p>而城居保两险只有前两个。</p>
+<p>五险一金交多少：</p>
+<p><img src="https://pic1.zhimg.com/80/v2-16492b8e6486522ca174e6b4c09b160c_720w.jpg?source=1940ef5c" alt="img"></p>
+<p>有时候也会提到的“四金”是五险一金（养老保险金、医疗保险金、失业保险金、工伤保险金、生育保险金、住房公积金）中由个人缴纳的部分（养老保险金、医疗保险金、失业保险金、住房公积金）。一般我们说“交四金”、“交五险一金”，都是指同一个意思。即用人单位为劳动者缴纳五险一金（用人单位另外支出），其中有四项劳动者也要缴纳（劳动者税前工资中扣除）。</p>
+<h2 id="二、细说五险一金"><a href="#二、细说五险一金" class="headerlink" title="二、细说五险一金"></a>二、细说五险一金</h2><h3 id="2-1-工伤保险"><a href="#2-1-工伤保险" class="headerlink" title="2.1 工伤保险"></a>2.1 工伤保险</h3><p>在工作期间，上下班也好，出差也好，如果不幸遇到工伤事故受到意外伤害，如上班途中被车刮擦受伤可以从国家领取一笔钱作为补偿。或者因为长期工作，患上职业病（如颈椎病等），暂时或者永久丧失劳动能力，甚至很不幸去世了，同样也可以获取这笔补偿。这里提醒三点：</p>
+<p>第一，上班期间的意外或工伤事故，一定要是非本人主要责任，像雪天上下班路上摔倒就不能领这笔钱，因为路滑摔倒的主要责任在你自己，不是别人造成的。</p>
+<p>第二，一旦真的工伤发生，记得第一时间就申请工伤鉴定，证明是上班期间受到的伤害，否则也拿不到赔偿。</p>
+<p>第三，如果工作时间和工作地点都非常规，比如晚上陪客户喝酒喝死了，也可以算是工伤，因为“工作原因”是认定工伤的核心要件。只要证明是出于“工作原因”，就是工伤。</p>
+<h3 id="2-2-失业保险"><a href="#2-2-失业保险" class="headerlink" title="2.2 失业保险"></a>2.2 失业保险</h3><p>简单说就是公司倒闭了，或者你被公司炒了鱿鱼，可以按照公司所在地，当地社会最低工资标准的80%领取12月到24个月的失业补助。以保证哪怕你一年两年找不到工作，至少还可以吃饭。按规定是交的时间越长，领的时间越长。关于失业保险，提醒几点：</p>
+<p>第一，失业保险必须是非你本人的意愿而离职失业，如果是你主动离职换工作，那就别想了。</p>
+<p>第二，领取失业保险期间，如果找到了新工作，哪怕没有领够你的最长可以领取的时间，也不能再领取失业保险。</p>
+<h3 id="2-3-养老保险"><a href="#2-3-养老保险" class="headerlink" title="2.3 养老保险"></a>2.3 养老保险</h3><p>养老金是交到了两个账户里，个人账户和统筹账户。将来领钱也是从两个账户里领。养老金的领取条件是达到法定退休年龄且缴费年限累计满15年。</p>
+<p><strong>个人账户</strong></p>
+<p><strong>个人账户养老金=退休时个人账户的余额 ÷ 计发月数</strong></p>
+<p>退休时个人账户的余额就是你工作时每个月交的那8%，不断累积，最后攒下来的金额。计发月数即退休后能领多久的退休金，说白了就是退休后还能活多长时间，根据退休年龄的不同，“计发月数”也不一样。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-fa0bb040b2f6723afadb38a59c69e2a4_720w.jpg?source=1940ef5c" alt="img"></p>
+<p>但计发月数并不意味着你退休后只能领这么长时间的退休金，只要你一直活着，就可以一直领下去。</p>
+<p><strong>统筹基金账户</strong></p>
+<p><strong>统筹基金账户养老金=（全省上年度在岗职工月平均工资+全省上年度在岗职工月平均工资×本人平均缴费指数）÷2×缴费年限×1%</strong></p>
+<p>缴费指数是由参保人每年的缴费基数除以当地上年度的职工平均工资，得出缴费当年的缴费工资指数，如此每年计算一次，到退休时再把每年的缴费指数相加，除以实际缴费年限得出平均缴费指数。</p>
+<h3 id="2-4-生育保险和新生儿医保"><a href="#2-4-生育保险和新生儿医保" class="headerlink" title="2.4 生育保险和新生儿医保"></a>2.4 生育保险和新生儿医保</h3><p>生宝宝前，记得把生育保险交上，也就是咱们平时缴纳的社保中的一项重要内容！生宝宝后，记得及时把新生儿医保交上，万一宝宝生病住院，期间产生的费用都可以享受国家报销！</p>
+<h4 id="2-4-1-生育保险"><a href="#2-4-1-生育保险" class="headerlink" title="2.4.1 生育保险"></a>2.4.1 生育保险</h4><p>生育保险主要包括生育医疗待遇和生育津贴，不受户籍限制，只要满足享受生育保险的条件，就可以在异地使用。</p>
+<p><strong>生育医疗待遇</strong>：报销生宝宝期间的各项费用，从门诊、产检到住院生育都可以得到一定金额的报销，甚至流产、节育这些和计划生育相关的行为也不例外。有的城市可以直接在医院结算，有的则需要通过公司申请。要注意的是，生育保险的报销也是有时间限制的，长一些的18个月内，但部分地区及城市只能在6个月内。</p>
+<p><strong>生育津贴</strong>：是因生娃暂时不能工作，失去收入期间，国家给予咱们的生活费，即经济补偿，<strong>生育津贴=上年度单位人均缴费工资÷30×产假天数</strong>。生育津贴的多少和个人工资的高低并无关系，而是和公司整体的经营状况，工资水平有关，你公司人均缴费工资越高，能领到的生育津贴也就越多。产假一般情况下，国家统一规定是98天，其中产前可以休15天，但实际情况的不同，产假的天数也会相应增加。大部分城市的生育津贴申领都是需要通过公司的帮助完成。另外，生育津贴是由国家发放，且必须参加生育保险才能领取，产假工资则是由公司发放给休产假职工的工资，二者一般只能领取一个。如果生育津贴低于本人工资标准，是要由公司补足差额的。<strong>要注意的是，生育津贴不用交税！</strong></p>
+<p>男性的生育保险有什么用？如果老婆有社保，且满足享受生育保险的条件，那么只能夫妻只能使用一个人的保险来报销，即两个人不能同时申请；如果老婆没有工作没有社保，是完全可以用丈夫的生育保险来报销的，男性没有生育津贴，但也能享受50%的生育医疗待遇报销和10天陪产假。</p>
+<p>生育保险的使用是有条件的：1）符合国家、省、市计划生育政策；2）满足当地的缴费年限和连续性，不同地区要求不同。一般来说，会要求咱们在生育前连续足额缴纳9个月，或12个月的生育保险，并且使用时处于缴纳状态。</p>
+<h4 id="2-4-2-新生儿医保"><a href="#2-4-2-新生儿医保" class="headerlink" title="2.4.2 新生儿医保"></a>2.4.2 新生儿医保</h4><p>新生儿医保指刚生下来的宝宝办理的医保，保费便宜，投保限制少，可以用来报销他们生病住院期间的各项医疗费用，需要尽量赶在宝宝出生的三个月内办理。新生儿医保没有等待期，刚生下来就能报！意思是说，哪怕孩子刚出生就生病，没有来得及办医保，也是可以先看病，后报销的，然后赶在国家规定的期限内给孩子办理好医保卡就行了。</p>
+<p>不同于职工医保，新生儿医保一旦断缴从次月起就不能享受报销。新生儿医保是一年一交，一旦断缴就意味着次年无法享受医保报销，此时如果宝宝恰好生病去医院，无论花多花少都要自己兜着！甚至可能还会影响后续的报销范围、报销额度和报销比例。</p>
+<h3 id="2-5-医疗保险"><a href="#2-5-医疗保险" class="headerlink" title="2.5 医疗保险"></a>2.5 医疗保险</h3><h4 id="2-5-1-概述"><a href="#2-5-1-概述" class="headerlink" title="2.5.1 概述"></a>2.5.1 概述</h4><p>咱们国家的医保参保系统有两个：一个是有雇主的打工一族交的<strong>城镇职工医疗保险，</strong>它是由国家强制用人单位缴纳，说白了就是有公司替你交一部分，而个人仅需承担一小部分；另一个则是没工作的人交的<strong>城乡居民医疗保险</strong>，此种所有费用都要自己承担，但交的钱要比职工医保少，且不强制。前者比后者交的多，报销时候享受的待遇也好一些。如果你没有工作，但有钱，确实想享受医疗待遇更好的职工医保也不是不可以，你可以在户籍所在地以灵活就业人员的身份参加城镇职工医保，或选择挂靠朋友公司或社保代理机构的方式，来缴纳职工社保。</p>
+<p>医保有两个账户，像咱们平时交的钱，都会被分为两个部分，一部分划入个人账户，一部分划入统筹账户。</p>
+<p><strong>个人账户</strong>即你自己的账户，你可以自由支配这些钱的使用，但仅限于医疗相关，说白了医保卡就相当于你的银行卡，但只能专项专用，刷在看病的地方，如定点药房买药，门诊看病等等。个人账户的钱是可以累加的，不管用不用，这些钱一直都存在你的医保卡中。一般来说，医保卡里的钱是不能取出来的，但以下几种情况可以取出：</p>
+<p>①医保卡使用终止，如参保人死亡，亲属可凭死亡证明等办理支取手续；</p>
+<p>②参保人移民，可凭公安部门出具的证明办理支取手续；</p>
+<p>③异地转移，在当地参保后，可把医保账户余额转至新账户。</p>
+<p><strong>统筹账户</strong>即公共账户，像咱们平时所说的医保报销，就是从这个账户里扣的钱，而不是个人账户。在平日里，每个人都会拿出一部分钱放进国家医保这个大池子，也就是城居保交的那几百块钱，和职工医保中公司缴纳的8%中的部分金额，包括政府补贴的金额，这样以后不管谁生了病，都可以直接从这个大池子里取钱看病。也就是说，无论你交多交少，都可以享受同样的医疗待遇，只不过职工医保和居民医保的报销比例稍微有所不同。医保报销公式：</p>
+<p><strong>报销金额 =（治疗总费用－起付线－自费部分）× 报销比例 ≤ 最高报销额</strong></p>
+<p><strong>起付线</strong>即最低报销额，起付线以下全部自费，超过起付线的部分才予以报销；</p>
+<p><strong>最高报销额</strong>即报销上限，无论你花多少，医保最多给你报这么多；</p>
+<p><strong>自费部分</strong>即超出社保目录外用药、项目等，社保不能够报销的部分。</p>
+<h4 id="2-5-2-报销条件"><a href="#2-5-2-报销条件" class="headerlink" title="2.5.2 报销条件"></a>2.5.2 报销条件</h4><p>医保报销也是有条件的，并非所有项目都能享受，即“<strong>一定点+三目录</strong>”，只有在这个范围内才予以报销。</p>
+<p><strong>①</strong> <strong>一定点</strong>即定点医院，并不是所有医院都能享受医保报销的，如私立诊所、海外就医等，这些社保都不予以支持，包括咱们平时买药也是，只有前往医保内定点药店，才能刷医保卡享受医保待遇；</p>
+<p><strong>②三目录</strong>即药品目录、诊疗项目目录和医疗服务设施目录，来看张图：</p>
+<p><img src="https://pica.zhimg.com/80/v2-311d632488fa1e0142c9fd6a8e0a6c25_720w.jpg?source=1940ef5c" alt="img"></p>
+<p>像整容、减肥、近视、护理费用这些超出社保范围外的项目都是不予报销的。</p>
+<p>异地就医报销遵循三个原则：就医地目录、参保地政策、就医地管理，即执行就医地的支付范围，参保地的支付政策、享受和本地参保人员相同的服务和管理。举个例子，假设老李在郑州交的社保，去北京看肺癌，但肺癌能不能报销，是看北京的医保目录；如果是包含在其报销目录内，那么报销多少则是要看郑州医保的报销比例和报销限额。</p>
+<h4 id="2-5-3-注意事项"><a href="#2-5-3-注意事项" class="headerlink" title="2.5.3 注意事项"></a>2.5.3 注意事项</h4><p><strong>1）小病不去大医院</strong></p>
+<p>首先我们要明白的一点是，医保的报销政策是医院的等级越高，报销的比例越低，像社区医院、一级医院这些等级低一些的医疗机构报销比例往往能达到80%-90%，而在三级医院报销比例就会降低很多，再加上大医院本身的医疗服务定价就比小医院高，有时候像一些感冒、发烧等的小病，其实小医院都看得好，报销比例也高，还倒真没必要非要跑大医院折腾。</p>
+<p><strong>2）尽量选择社保范围内用药</strong></p>
+<p>咱们社保目录内的用药主要包含甲类药和乙类药，其中甲类100%报销，乙类按一定比例报销，除此在社保外还有一种丙类药一分不报，如果真想省钱，那就尽量使用社保范围内用药。</p>
+<p><strong>3）社保不要断缴</strong></p>
+<p>社保断缴，最直接的影响就是医疗保险。对于大部分城市，从社保断缴的第二个月开始，如果你恰好生病去医院，个人账户上的钱还能正常刷，但是住院等费用就不能再享受报销了。另外，医保连续缴费时间越长，每年报销上限也就越高。医保只有累计缴满25年才能享受终身，如果经常中断，很可能到退休时缴费年限累计不够，也就无法在退休时正常享受医保报销了。</p>
+<p>职工医保已经交够年限但还没退休，还需要继续交。因为缴纳医保满足年限后只是保证退休后可以享受医保待遇。若你退休前就停缴医保，就意味着你停缴期间不再能享受医保待遇。如果你退休时还没缴够年限，则可以选择继续缴费，待缴够年限后再享受医保待遇，或直接转为城乡居民医保，一年一交，不再享受退休待遇。</p>
+<p><strong>4）大病医保可二次报销</strong></p>
+<p>简单说，大病医疗保险就是二次报销，它是对基本医疗保险的一种延伸，而不是针对某种疾病进行赔付。说白了就是你生病花的钱太多了，已经超过了基本医疗的报销上限，但国家考虑到你的担子太重，从而对你花超的这部分钱再次进行报销，自己要承担的越多，二次可报销的钱也就越多，有的地方甚至不设封顶线，可以说是相当人性化的福利了。只要咱们平时多交个几块钱，就可以享受这项政策，至于多交多钱，各地政策不太一样。</p>
+<p><strong>5）医保卡不要外借</strong></p>
+<p>医保卡外借会留下清晰的就医记录，买药也好、就诊也好，都会记在你的名下。如果你想购买商业保险，或者已经买过了，这些都会成为保险公司核保及理赔时的重点调查内容。如果只是感冒发烧这种小问题还好说，影响不大，但如果是一些严重的疾病或者慢性病，甚至涉及到保险公司健康告知的，那你怕是要倒霉了！</p>
+<h3 id="2-6-公积金"><a href="#2-6-公积金" class="headerlink" title="2.6 公积金"></a>2.6 公积金</h3><p>公积金是国家强制用人单位和雇员按照相同的比例交的一种长期住房储蓄金，专项用于个人支付住房方面的费用，如申请贷款买房、支付房租、房屋装修等。公积金贷款利率低，同样是50万的贷款，30年的贷款期限，公积金贷款能比商贷省下25万不止。</p>
+<h4 id="2-6-1-住房贷款"><a href="#2-6-1-住房贷款" class="headerlink" title="2.6.1 住房贷款"></a>2.6.1 住房贷款</h4><p>一般来说，公积金连续缴满一年后方可贷款买房，部分地区是连续缴纳6个月即可，且每人只有两次贷款机会，如果想用第二次贷款，需要把之前的贷款先还清，再连续足额缴纳6个月或12个月即可。</p>
+<p>其次，同商业贷款一样，公积金贷款最长期限也不能超过30年，且贷款期限和你申请贷款时的年龄加起来不能超过70年！这也就意味着如果你想贷最长期限30年，那就必须要在40岁之申请公积金贷款。</p>
+<p>第三，不同地区公积金贷款都有相应最高额度。除了常见的个人贷款，住房贷款还可以以家庭的名义申请，配偶、父母、子女等都可以和主贷人一起参与贷款，只要你们都满足公积金贷款的条件，就有机会享受更高的公积金贷款额度。</p>
+<p>虽然有贷款额度设置，但并不是所有人都能直接贷到公积金最高额度。<strong>可以说，住房公积金的贷款额度和咱们账户的存储余额是挂钩的！</strong>那具体是怎么个关联法呢？公积金常见的计算方式主要有三种，但无论如何计算，一定不会超过当地最高贷款额度：</p>
+<p><strong>①</strong>一种是直接以余额的倍数计算，常见的为14-30倍，即<strong>贷款额度≤公积金账户余额×当地倍数</strong></p>
+<p><strong>②</strong>再稍微复杂些的，则是要用账户平均余额去乘，<strong>公积金可贷额度≤申请公积金账户月平均余额×倍数</strong></p>
+<p><strong>③</strong>另一种则是要和你缴存公积金的月份或者年份挂钩，每个城市具体计算方法不同，<strong>公积金贷款额度≤公积金账户余额×（倍数+已缴存年数）</strong></p>
+<h4 id="2-6-2-公积金账户现金提取"><a href="#2-6-2-公积金账户现金提取" class="headerlink" title="2.6.2 公积金账户现金提取"></a>2.6.2 公积金账户现金提取</h4><p>除了住房贷款，咱们公积金账户里的余额也是可以提取使用的，二者并不冲突。</p>
+<p><strong>1）购房提取</strong></p>
+<p>顾名思义，就是提取买房，这笔钱既可以用作购房首付，也可以用来每月偿还贷款。但前提都是先使用再提取，即“报销制”，说白了就是公积金账户里的钱虽然是你的，但也不是你随便就能提取的。只有你先买了房，后期携带购房发票、房本复印件等相关证明材料前往住房公积金中心才能办理提取手续。不过当你提取成功后，这笔钱就可以自由支配了，你想干嘛干嘛，没有人再多管你了。</p>
+<p><strong>2）支付房租</strong></p>
+<p>就算不买房，公积金同样可以用来租房，一定程度上来减轻咱们的经济压力。它不仅可以用来支付市场租房房租，还可以支付配租或政府招租补贴的经济租赁房房租。在这里要注意的是，如果咱们想提取公积金支付房租，应在房屋租赁期内提出，并办理提取手续。</p>
+<p><strong>3）装修、翻修房屋</strong></p>
+<p>除了常见的租房、购房，咱们的公积金还可以用来装修、翻修房子。装修是需要咱们提供自己与装修公司房屋的委托合同及其他相关材料，如公积金支取单去办理提取手续，但是很多城市已经逐步取消了这项用途。翻修则是要提供政府开具的安全许可、用地批文等，像现在很多农村自己重新翻修房子，都可以提取公积金使用。</p>
+<p><strong>4）父母给子女购房</strong></p>
+<p>公积金还可以选择给子女购房用。同个人公积金账户一样，只要满足一定的条件，父母既可以以自己的名义给子女申请贷款，子女也可以提取父母公积金的账户余额使用。</p>
+<p><strong>5）治疗重大疾病</strong></p>
+<p>虽然公积金是住房储蓄金，但在关键时刻，公积金还能用来看病！无论是本人还是家属，只要你公积金账户余额充足，当遇到大病大手术时，都可以提取公积金来支付医疗费用，提取的总金额 ≤ 个人承担的费用，且要在出院之日起一年内申请提取。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://www.zhihu.com/question/47845109/answer/1235006626">保贝说保的知乎回答</a></li>
+<li><a href="https://www.icourse163.org/course/XTU-1206016802">劳动与社会保障法：原理及案例（中国大学MOOC）</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>社保</tag>
+        <tag>五险一金</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>搭建树莓派集群</title>
+    <url>/%E6%8A%80%E6%9C%AF/%E6%90%AD%E5%BB%BA%E6%A0%91%E8%8E%93%E6%B4%BE%E9%9B%86%E7%BE%A4/</url>
+    <content><![CDATA[<h2 id="跑起来"><a href="#跑起来" class="headerlink" title="跑起来"></a>跑起来</h2><h3 id="硬件准备"><a href="#硬件准备" class="headerlink" title="硬件准备"></a>硬件准备</h3><p>架子</p>
+<p>风扇</p>
+<p>散热片</p>
+<p>usb插排（瓦数）</p>
+<p>32GB micro sd卡</p>
+<p>读卡器</p>
+<p>树莓派4B 4G内存版</p>
+<h3 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h3><p>下载ubuntu</p>
+<p><a href="https://ubuntu.com/download/raspberry-pi">https://ubuntu.com/download/raspberry-pi</a></p>
+<p>如果你尝试在装过系统的 SD 卡上安装系统，sd卡格式化：SD Formatter。</p>
+<p>镜像安装：win32diskimager</p>
+<p>.解压下载的操作系统镜像压缩文件，得到 img 镜像文件（文件名后缀就是 img）。<br>2.将SD使用卡托或者读卡器后，连上电脑。<br>3.解压并运行 win32diskimager 工具。<br>4.在 win32diskimager 软件中选择系统镜像（img文件），“Device”下选择SD的盘符，然后选择“Write”，期间出现对话框选择是。</p>
+<p>如果 Windows 提示你是否要格式化 SD 卡，<strong>请不要格式化</strong>，否则可能导致安装在隐藏分区中的系统被擦除而无法进入系统。</p>
+<p>安装完成之后，你会发现 SD 卡所显示的容量低于预期。这是因为在 Windows 系统中只能显示出 FAT 格式的 boot 分区，只有几十个 MB，更大的分区是 Linux 分区，Windows 系统是无法看到的，这并不影响树莓派系统的工作。</p>
+<h4 id="Setup-Wi-Fi-directly-from-your-SD-card"><a href="#Setup-Wi-Fi-directly-from-your-SD-card" class="headerlink" title="Setup Wi-Fi directly from your SD card"></a>Setup Wi-Fi directly from your SD card</h4><p>Navigate inside the root folder of the card. The name should be something like “system-boot”.</p>
+<p>Find the file named “network-config” and open it in a text editor. On Windows, you can right-click -&gt; “open with” and select any text editor you want.</p>
+<p>The file should contains this:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># This file contains a netplan-compatible configuration which cloud-init</span><br><span class="line"># will apply on first-boot. Please refer to the cloud-init documentation and</span><br><span class="line"># the netplan reference for full details:</span><br><span class="line">#</span><br><span class="line"># https:&#x2F;&#x2F;cloudinit.readthedocs.io&#x2F;</span><br><span class="line"># https:&#x2F;&#x2F;netplan.io&#x2F;reference</span><br><span class="line">#</span><br><span class="line"># Some additional examples are commented out below</span><br><span class="line"></span><br><span class="line">version: 2</span><br><span class="line">ethernets:</span><br><span class="line">  eth0:</span><br><span class="line">    dhcp4: true</span><br><span class="line">    optional: true</span><br><span class="line">#wifis:</span><br><span class="line">#  wlan0:</span><br><span class="line">#    dhcp4: true</span><br><span class="line">#    optional: true</span><br><span class="line">#    access-points:</span><br><span class="line">#      myhomewifi:</span><br><span class="line">#        password: &quot;S3kr1t&quot;</span><br><span class="line">#      myworkwifi:</span><br><span class="line">#        password: &quot;correct battery horse staple&quot;</span><br><span class="line">#      workssid:</span><br><span class="line">#        auth:</span><br><span class="line">#          key-management: eap</span><br><span class="line">#          method: peap</span><br><span class="line">#          identity: &quot;me@example.com&quot;</span><br><span class="line">#          password: &quot;passw0rd&quot;</span><br><span class="line">#          ca-certificate: &#x2F;etc&#x2F;my_ca.pem</span><br></pre></td></tr></table></figure>
+
+<p>改成这样：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">version: 2</span><br><span class="line">ethernets:</span><br><span class="line">  eth0:</span><br><span class="line">    dhcp4: true</span><br><span class="line">    optional: true</span><br><span class="line">wifis:</span><br><span class="line">  wlan0:</span><br><span class="line">    dhcp4: true</span><br><span class="line">    optional: true</span><br><span class="line">    access-points:</span><br><span class="line">      &quot;YOUR_WIFI_NAME&quot;:</span><br><span class="line">        password: &quot;YOUR_WIFI_PASSWORD&quot;</span><br></pre></td></tr></table></figure>
+
+<p>A few things to pay attention to:</p>
+<ul>
+<li>Make sure the <strong>indentation is exactly 2 spaces</strong>. No tab, no 4 spaces.</li>
+<li>Replace YOUR_WIFI_NAME with your actual Wi-Fi name. <strong>Keep the quotes “”</strong>.</li>
+<li>Replace YOUR_WIFI_PASSWORD with the password for the Wi-Fi. <strong>Keep the quotes “”</strong>.</li>
+<li>Of course, this Wi-Fi network should be the same as the one your computer is currently connected to, otherwise the rest of this tutorial won’t work.</li>
+</ul>
+<p>ssh默认是直接起的，不用自己设置</p>
+<h3 id="软件设置"><a href="#软件设置" class="headerlink" title="软件设置"></a>软件设置</h3><p>1）找ip</p>
+<p>2）ssh，改密码<br>在/etc/hosts增加映射对</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">192.168.1.11 node1</span><br><span class="line">192.168.1.12 node2</span><br></pre></td></tr></table></figure>
+<p>生成公私钥对<code>ssh-keygen -t rsa</code><br>发送公钥到相应机器<code>ssh-copy-id node2</code></p>
+<p>3）Run </p>
+<p><code>timedatectl</code>：显示当前时间时区等信息</p>
+<p><code>timedatectl list-timezones</code>：列出所有可用的时区</p>
+<p><code>timedatectl set-timezone your_time_zone</code>：设置时区</p>
+<p>例如：<code>timedatectl set-timezone Europe/Paris</code></p>
+<p>4）apt源</p>
+<p>是arm版，源是以ubuntu-ports结尾</p>
+<p>lsb_release -a 看系统版本</p>
+<p><code>sudo vim /etc/apt/sources.list</code></p>
+<p>修改为以下源：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic main multiverse restricted universe</span><br><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-security main multiverse restricted universe</span><br><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-updates main multiverse restricted universe</span><br><span class="line">deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu-ports/ bionic-backports main multiverse restricted universe</span><br></pre></td></tr></table></figure>
+
+<p>更新</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt update</span><br><span class="line">sudo apt upgrade</span><br><span class="line">sudo apt autoremove</span><br></pre></td></tr></table></figure>
+
+
+
+<p>5）pip</p>
+<p>安装pip3</p>
+<p><code>sudo apt-get install python3-pip</code></p>
+<p>修改pip源</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">sudo mkdir ~/.pip </span><br><span class="line">sudo nano ~/.pip/pip.conf</span><br></pre></td></tr></table></figure>
+
+<p>将以下内容写入配置文件：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[global]</span><br><span class="line">index-url=https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line">[install]</span><br><span class="line">trusted-host=pypi.tuna.tsinghua.edu.cn</span><br></pre></td></tr></table></figure>
+
+<p>6）设置静态ip</p>
+<p><code>sudo apt install net-tools</code></p>
+<p>sudo nano /etc/netplan/50-cloud-init.yaml</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wifis:</span><br><span class="line">    wlan0:</span><br><span class="line">    	access-points:</span><br><span class="line">    		<span class="string">&quot;无线的SSID名&quot;</span>:</span><br><span class="line">    			password:无线密码</span><br><span class="line">    	addresses: [<span class="string">&quot;静态ip&quot;</span>/24]</span><br><span class="line">    	gateway4: <span class="string">&quot;网关&quot;</span></span><br><span class="line">    	</span><br><span class="line">network:</span><br><span class="line">    ethernets:</span><br><span class="line">        eth0:</span><br><span class="line">            dhcp4: <span class="literal">true</span></span><br><span class="line">            optional: <span class="literal">true</span></span><br><span class="line">    version: 2</span><br><span class="line">    wifis:</span><br><span class="line">        wlan0:</span><br><span class="line">            access-points:</span><br><span class="line">                HUAWEI_Wang:</span><br><span class="line">                    password: 3wm2359475</span><br><span class="line">            addresses: [192.168.3.100/24]</span><br><span class="line">            gateway4: 192.168.3.1</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>使配置生效</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo netplan apply</span><br></pre></td></tr></table></figure>
+
+<p>查看ip地址</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ifconfig</span><br></pre></td></tr></table></figure>
+
+<h3 id="风扇"><a href="#风扇" class="headerlink" title="风扇"></a>风扇</h3><h4 id="实现温控风扇"><a href="#实现温控风扇" class="headerlink" title="实现温控风扇"></a>实现温控风扇</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">wget https://github.com/joan2937/pigpio/archive/master.zip</span><br><span class="line">unzip master.zip</span><br><span class="line"><span class="built_in">cd</span> pigpio-master</span><br><span class="line">make</span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> pigpio</span><br><span class="line"></span><br><span class="line">pi = pigpio.pi()</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">  status, sysinfo = subprocess.getstatusoutput(<span class="string">&quot;landscape-sysinfo&quot;</span>)</span><br><span class="line">  info_list = sysinfo.split(<span class="string">&quot;\n&quot;</span>)</span><br><span class="line">  temperature = <span class="number">100</span></span><br><span class="line">  <span class="keyword">for</span> info <span class="keyword">in</span> info_list:</span><br><span class="line">    <span class="keyword">if</span> info.find(<span class="string">&quot;Temperature&quot;</span>) != -<span class="number">1</span>:</span><br><span class="line">      temperature = <span class="built_in">float</span>(info.split()[<span class="number">1</span>])</span><br><span class="line">      <span class="keyword">break</span></span><br><span class="line">  <span class="keyword">if</span> temperature &gt; <span class="number">55.0</span>:</span><br><span class="line">    pi.write(<span class="number">18</span>, <span class="number">1</span>)</span><br><span class="line">    time.sleep(<span class="number">120</span>)</span><br><span class="line">  <span class="keyword">else</span>:</span><br><span class="line">    pi.write(<span class="number">18</span>, <span class="number">0</span>)</span><br><span class="line">    time.sleep(<span class="number">60</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h4 id="开机启动脚本"><a href="#开机启动脚本" class="headerlink" title="开机启动脚本"></a>开机启动脚本</h4><p>需要创建一个rc.local的可执行文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo nano /etc/rc.local</span><br></pre></td></tr></table></figure>
+
+<p>内容</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#! /bin/sh -e</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;password&#x27;</span> | sudo -S /home/ubuntu/pigpio-master/pigpiod</span><br><span class="line">nohup python3 /home/ubuntu/argon-fan/start.py &gt; error.log 2&gt;&amp;1 &amp;</span><br><span class="line"><span class="built_in">exit</span> 0</span><br></pre></td></tr></table></figure>
+
+<p>p.s</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash的0、1、2分别代表如下含义：</span><br><span class="line"> 0 – stdin (standard input)</span><br><span class="line"> 1 – stdout (standard output)</span><br><span class="line"> 2 – stderr (standard error)</span><br><span class="line">nohup python -u main.py &gt; test.out 2&gt;&amp;1 &amp;</span><br><span class="line">nohup+最后面的&amp; 是让命令在后台执行</span><br><span class="line">&gt;test.out 是将信息输出到该日志中</span><br><span class="line">2&gt;&amp;1 是将标准错误信息转变成标准输出</span><br></pre></td></tr></table></figure>
+
+
+
+<p>给脚本赋权限</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo chmod +x /etc/rc.local</span><br></pre></td></tr></table></figure>
+
+<p>完成脚本编写后需要修改rc-local.service</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo vim /lib/systemd/system/rc-local.service</span><br></pre></td></tr></table></figure>
+
+<p>内容</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[Service]</span><br><span class="line">ExecStart=/etc/rc.local start</span><br><span class="line">[Install]  </span><br><span class="line">WantedBy=multi-user.target  </span><br><span class="line">Alias=rc-local.service</span><br></pre></td></tr></table></figure>
+
+<p>systemd 默认读取 /etc/systemd/system 下的配置文件, 所以还需要在 /etc/systemd/system 目录下创建软链接</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ln -s /lib/systemd/system/rc-local.service /etc/systemd/system/ </span><br></pre></td></tr></table></figure>
+
+<p>最后执行</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">systemctl <span class="built_in">enable</span> rc-local</span><br><span class="line">systemctl start rc-local.service  <span class="comment">#启动服务</span></span><br><span class="line">systemctl stop rc-local.service  <span class="comment">#暂停服务</span></span><br><span class="line">systemctl status rc-local.service <span class="comment">#查看状态</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="K8S"><a href="#K8S" class="headerlink" title="K8S"></a>K8S</h3><h4 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h4><ul>
+<li><p>时间同步<br>kubernetes要求集群中的节点时间必须精确一直，这里使用chronyd服务从网络同步时间</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@master ~]<span class="comment"># systemctl start chronyd</span></span><br><span class="line">[root@master ~]<span class="comment"># systemctl enable chronyd</span></span><br><span class="line">[root@master ~]<span class="comment"># date</span></span><br></pre></td></tr></table></figure></li>
+<li><p>禁用iptable和firewalld服务<br>kubernetes和docker 在运行的中会产生大量的iptables规则，为了不让系统规则跟它们混淆，直接关闭系统的规则</p>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[root@master ~]<span class="comment"># systemctl stop firewalld</span></span><br><span class="line">[root@master ~]<span class="comment"># systemctl disable firewalld</span></span><br><span class="line">[root@master ~]<span class="comment"># systemctl stop iptables</span></span><br><span class="line">[root@master ~]<span class="comment"># systemctl disable iptables</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>禁用swap分区</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">swapoff -a</span><br></pre></td></tr></table></figure></li>
+<li><p>修改linux的内核参数</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 修改linux的内核采纳数，添加网桥过滤和地址转发功能</span></span><br><span class="line"><span class="comment"># 编辑/etc/sysctl.d/kubernetes.conf文件，添加如下配置：</span></span><br><span class="line">net.bridge.bridge-nf-call-ip6tables = 1</span><br><span class="line">net.bridge.bridge-nf-call-iptables = 1</span><br><span class="line">net.ipv4.ip_forward = 1</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重新加载配置</span></span><br><span class="line">[root@master ~]<span class="comment"># sysctl -p</span></span><br><span class="line"><span class="comment"># 加载网桥过滤模块</span></span><br><span class="line">[root@master ~]<span class="comment"># modprobe br_netfilter</span></span><br><span class="line"><span class="comment"># 查看网桥过滤模块是否加载成功</span></span><br><span class="line">[root@master ~]<span class="comment"># lsmod | grep br_netfilter</span></span><br></pre></td></tr></table></figure></li>
+<li><p>安装docker</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">apt-get install -y docker.io</span><br></pre></td></tr></table></figure></li>
+<li><p>设置docker国内镜像源</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 配置</span></span><br><span class="line">tee /etc/docker/daemon.json &lt;&lt;-<span class="string">&#x27;EOF&#x27;</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="string">&quot;exec-opts&quot;</span>: [<span class="string">&quot;native.cgroupdriver=systemd&quot;</span>],</span><br><span class="line">	<span class="string">&quot;registry-mirrors&quot;</span>: [<span class="string">&quot;https://kn0t2bca.mirror.aliyuncs.com&quot;</span>]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br><span class="line"><span class="comment"># 重启</span></span><br><span class="line">systemctl daemon-reload</span><br><span class="line">systemctl restart docker</span><br><span class="line">systemctl <span class="built_in">enable</span> docker</span><br></pre></td></tr></table></figure></li>
+<li><p>配置k8s安装源，然后安装kubelet、kubeadm、kubectl</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">apt-get update &amp;&amp; apt-get install -y apt-transport-https</span><br><span class="line">curl https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg | apt-key add - </span><br><span class="line">cat &gt;&gt; /etc/apt/sources.list.d/kubernetes.list &lt;&lt; <span class="string">EOF</span></span><br><span class="line"><span class="string">deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main</span></span><br><span class="line"><span class="string">EOF</span>  </span><br><span class="line">apt-get update</span><br><span class="line">apt-get install -y kubelet=1.23.6-00 kubeadm=1.23.6-00 kubectl=1.23.6-00</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编辑/etc/sysconfig/kubelet, 添加下面的配置</span></span><br><span class="line">KUBELET_CGROUP_ARGS=<span class="string">&quot;--cgroup-driver=systemd&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置kubelet开机自启</span></span><br><span class="line">[root@master ~]<span class="comment"># systemctl enable kubelet</span></span><br></pre></td></tr></table></figure></li>
+<li><p>准备集群镜像</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 在安装kubernetes集群之前，必须要提前准备好集群需要的镜像，所需镜像可以通过下面命令查看</span></span><br><span class="line">[root@master ~]<span class="comment"># kubeadm config images list</span></span><br><span class="line"></span><br><span class="line">images=(</span><br><span class="line">	kube-apiserver-amd64:v1.23.6</span><br><span class="line">	kube-controller-manager-amd64:v1.23.6</span><br><span class="line">	kube-scheduler-amd64:v1.23.6</span><br><span class="line">	kube-proxy-amd64:v1.23.6</span><br><span class="line">	pause:3.7</span><br><span class="line">	etcd-amd64:3.5.3-0</span><br><span class="line">	coredns:1.8.6</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> imageName <span class="keyword">in</span> <span class="variable">$&#123;images[@]&#125;</span>;<span class="keyword">do</span></span><br><span class="line">	sudo docker pull registry.cn-hangzhou.aliyuncs.com/google_containers/<span class="variable">$imageName</span></span><br><span class="line">	sudo docker tag registry.cn-hangzhou.aliyuncs.com/google_containers/<span class="variable">$imageName</span> k8s.gcr.io/<span class="variable">$imageName</span></span><br><span class="line">	sudo docker rmi registry.cn-hangzhou.aliyuncs.com/google_containers/<span class="variable">$imageName</span> </span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></figure></li>
+<li><p> 集群初始化<br>下面的操作只需要在master节点上执行即可</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 创建集群</span></span><br><span class="line">[root@master ~]<span class="comment"># kubeadm init \</span></span><br><span class="line">	--apiserver-advertise-address=192.168.3.100 \</span><br><span class="line">	--image-repository registry.aliyuncs.com/google_containers \</span><br><span class="line">	--kubernetes-version=v1.23.6 \</span><br><span class="line">	--service-cidr=10.96.0.0/12 \</span><br><span class="line">	--pod-network-cidr=10.244.0.0/16</span><br><span class="line"><span class="comment"># 创建网络</span></span><br><span class="line">kubectl apply -f kube-flannel.yml</span><br><span class="line"><span class="comment"># 按指示创建必要文件，加入worker（在worker上操作）</span></span><br><span class="line">要是没保存token，可重新生成：kubeadm token create --print-join-command</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>kubeadm遇到问题中断，下次运行前<br><code>sudo kubeadm reset</code><br><code>sudo rm -rf $HOME/.kube</code></p>
+<p>遇到dns无法解析：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo rm /etc/resolv.conf</span><br><span class="line">sudo vim /etc/resolv.conf</span><br><span class="line">Add this line to the file: nameserver 223.5.5.5</span><br><span class="line">Restart the service: sudo systemctl restart systemd-resolved.service</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>集群测试<ul>
+<li>创建一个nginx服务<br><code>kubectl create deployment nginx  --image=nginx:1.14-alpine</code></li>
+<li>暴露端口<br><code>kubectl expose deploy nginx  --port=80 --target-port=80  --type=NodePort</code></li>
+<li>查看服务<br><code>kubectl get pod,svc</code></li>
+</ul>
+</li>
+</ul>
+<p>参考：</p>
+<p><a href="https://blog.csdn.net/qq_41985134/article/details/121182623">https://blog.csdn.net/qq_41985134/article/details/121182623</a></p>
+<p>microk8s</p>
+<p>sudo apt-get –purge remove snapd</p>
+<p>sudo apt-get install snapd</p>
+<p><a href="https://ubuntu.com/tutorials/how-to-kubernetes-cluster-on-raspberry-pi#1-overview">https://ubuntu.com/tutorials/how-to-kubernetes-cluster-on-raspberry-pi#1-overview</a></p>
+<p>解决墙：<a href="https://www.jianshu.com/p/02fd2540fab2">https://www.jianshu.com/p/02fd2540fab2</a></p>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>说药</title>
+    <url>/%E7%94%9F%E6%B4%BB/%E8%AF%B4%E8%8D%AF/</url>
+    <content><![CDATA[<h2 id="背景知识"><a href="#背景知识" class="headerlink" title="背景知识"></a>背景知识</h2><p>处方药：需要处方才能用</p>
+<p>甲类非处方药：须在药店由执业医师指导下购买和使用</p>
+<p>乙类非处方药：超市都能买到</p>
+]]></content>
+      <categories>
+        <category>生活</category>
+      </categories>
+      <tags>
+        <tag>药品</tag>
+      </tags>
+  </entry>
+</search>
